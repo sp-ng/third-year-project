@@ -7,6 +7,7 @@ from langchain.schema import HumanMessage
 from langchain.memory import ChatMessageHistory
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
 from langchain.prompts import PromptTemplate
+from langchain.prompts.chat import ChatPromptTemplate
 from langchain.output_parsers import CommaSeparatedListOutputParser
 from typing import Deque, List, Optional, Tuple
 from langchain.output_parsers import PydanticOutputParser
@@ -47,12 +48,29 @@ MaterialPrompt = PromptTemplate(
 )
 MaterialChain = MaterialPrompt | chat
 
-
+#Interactive Teaching
+StarterPrompt = PromptTemplate(
+    template="Create a short list of the most important points to teach about the following topic, only return a list: {topic}.",
+    input_variables=["topic"],
+)
+chatprompt = ChatPromptTemplate.from_messages([
+    ("system", "Your job is to teach a user about {topic}. Allow the user to ask follow up questions. Be as accurate as possible in your responses."),
+    ("human", "I want you to explain {topic}, specifically {points}."),
+])
+prompt = input("Pick a topic: ")
+points = chat.invoke(StarterPrompt.format(topic=prompt))
+messages = chatprompt.format_messages(topic=prompt, points=points)
+result = chat.invoke(messages)
 while True:
-    prompt = input("Input text: ")
-    result = MaterialChain.invoke({"topic": prompt, "retrieved": retriever.invoke(prompt)})
+    print(result.content)
+    messages.append(result)
+    prompt = input("Response: ")
+    messages.append(HumanMessage(content=prompt))
+    result = chat.invoke(messages)
+    #prompt = input("Input text: ")
+    #result = MaterialChain.invoke({"topic": prompt, "retrieved": retriever.invoke(prompt)})
     #result = retriever.invoke(prompt)
-    print(result)
+    #print(result)
     #result = MultChoiceChain.invoke({"topic": prompt})
     #result = FreeResponseChain.invoke({"topic": prompt})
     #print(result.question)

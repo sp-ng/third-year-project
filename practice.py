@@ -7,6 +7,7 @@ from langchain.schema import HumanMessage
 from langchain.memory import ChatMessageHistory
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
 from langchain.prompts import PromptTemplate
+from langchain.prompts.chat import ChatPromptTemplate
 from langchain.output_parsers import CommaSeparatedListOutputParser
 from typing import Deque, List, Optional, Tuple
 from langchain.output_parsers import PydanticOutputParser
@@ -84,10 +85,24 @@ ResponseCheckerPrompt = PromptTemplate(
 )
 ResponseCheckerChain = ResponseCheckerPrompt | chat
 
+#Questioning
+chatprompt = ChatPromptTemplate.from_messages([
+    ("system", "Your job is to question a user about {topic}. You want to encourage them to think critically about the topic and try to test their understanding to help promote deeper understanding of the topic. Try not to directly give the answer but give hints that can help the user come up with the answer themselves."),
+    ("human", "I want you to test my understanding of {topic}, start asking me about it"),
+])
+
+prompt = input("Pick a topic: ")
+messages = chatprompt.format_messages(topic=prompt)
+result = chat.invoke(messages)
 while True:
-    prompt = input("Input text: ")
-    result = retriever.get_relevant_documents(prompt)
-    print(result)
+    print(result.content)
+    messages.append(result)
+    prompt = input("Response: ")
+    messages.append(HumanMessage(content=prompt))
+    result = chat.invoke(messages)
+    #prompt = input("Input text: ")
+    #result = retriever.get_relevant_documents(prompt)
+    #print(result)
     #result = MultChoiceChain.invoke({"topic": prompt})
     #result = FreeResponseChain.invoke({"topic": prompt})
     #print(result.question)
