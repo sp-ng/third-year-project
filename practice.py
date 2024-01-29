@@ -27,19 +27,15 @@ chat = ChatOpenAI(temperature=0, openai_api_key=openai_api_key, model_name=opena
 loader = DirectoryLoader('./Docs', glob="*.pdf")
 documents = loader.load()
 text_splitter = RecursiveCharacterTextSplitter(
-    # Set a really small chunk size, just to show.
     chunk_size = 500,
     chunk_overlap  = 50,
     length_function = len,
     add_start_index = True,
 )
 texts = text_splitter.split_documents(documents)
-print(texts[0])
-print(texts[1])
 embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
 db = FAISS.from_documents(texts, embeddings)
 retriever = db.as_retriever(search_kwargs={"k": 3})
-
 
 #Multiple Choice
 class MultipleChoice(BaseModel):
@@ -66,7 +62,8 @@ class FreeResponse(BaseModel):
 FreeResponseParser = PydanticOutputParser(pydantic_object=FreeResponse)
 
 FreeResponsePrompt = PromptTemplate(
-    template="Create a free response question based on the following topic, include an example answer to help guide assessment: {topic}\n{format_instructions}",
+    template="""Create a free response question based on the following topic, include an example answer to help 
+    guide assessment: {topic}\n{format_instructions}""",
     input_variables=["topic"],
     partial_variables={"format_instructions": FreeResponseParser.get_format_instructions()},
 )
@@ -78,7 +75,8 @@ ResponseCheckerPrompt = PromptTemplate(
     You will be provided with a question, and example answer to guide marking, and an answer to mark. 
     Question: {question}
     Example: {example}
-    Use the above to mark the following answer. Give it a mark out of 10 representing how the response indicates a correct understanding of the topic. State what was correct in the answer and what was missing/could be improved
+    Use the above to mark the following answer. Give it a mark out of 10 representing how the response 
+    indicates a correct understanding of the topic. State what was correct in the answer and what was missing/could be improved
     Answer: {answer}
     """,
     input_variables=["question", "example", "answer"],
@@ -87,7 +85,9 @@ ResponseCheckerChain = ResponseCheckerPrompt | chat
 
 #Questioning
 chatprompt = ChatPromptTemplate.from_messages([
-    ("system", "Your job is to question a user about {topic}. You want to encourage them to think critically about the topic and try to test their understanding to help promote deeper understanding of the topic. Try not to directly give the answer but give hints that can help the user come up with the answer themselves."),
+    ("system", """Your job is to question a user about {topic}. You want to encourage them to think critically about the topic and
+      try to test their understanding to help promote deeper understanding of the topic. Try not to directly give the answer but
+      give hints that can help the user come up with the answer themselves."""),
     ("human", "I want you to test my understanding of {topic}, start asking me about it"),
 ])
 
@@ -100,6 +100,12 @@ while True:
     prompt = input("Response: ")
     messages.append(HumanMessage(content=prompt))
     result = chat.invoke(messages)
+
+
+
+
+
+
     #prompt = input("Input text: ")
     #result = retriever.get_relevant_documents(prompt)
     #print(result)
