@@ -23,7 +23,7 @@ chat = ChatOpenAI(temperature=0, openai_api_key=openai_api_key, model_name=opena
 #replace loader with dir loader
 #replace splitter with recursive splitter
 #setup caching docs
-#loader = TextLoader('../../../state_of_the_union.txt')
+""" loader = TextLoader('../../../state_of_the_union.txt')
 loader = DirectoryLoader('./Docs', glob="*.pdf")
 documents = loader.load()
 text_splitter = RecursiveCharacterTextSplitter(
@@ -36,7 +36,7 @@ texts = text_splitter.split_documents(documents)
 embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
 db = FAISS.from_documents(texts, embeddings)
 retriever = db.as_retriever(search_kwargs={"k": 3})
-
+ """
 #Multiple Choice
 class MultipleChoice(BaseModel):
     question: str = Field(description="A multiple choice question")
@@ -91,7 +91,7 @@ chatprompt = ChatPromptTemplate.from_messages([
     ("human", "I want you to test my understanding of {topic}, start asking me about it"),
 ])
 
-prompt = input("Pick a topic: ")
+""" prompt = input("Pick a topic: ")
 messages = chatprompt.format_messages(topic=prompt)
 result = chat.invoke(messages)
 while True:
@@ -100,7 +100,7 @@ while True:
     prompt = input("Response: ")
     messages.append(HumanMessage(content=prompt))
     result = chat.invoke(messages)
-
+ """
 
 
 
@@ -123,4 +123,6 @@ while True:
     
     #list = MultChoiceParser.parse(result)
     #print(list)
-
+def makeQuestion(topic):
+    result = MultChoiceChain.invoke({"topic": topic})
+    return result.dict()

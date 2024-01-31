@@ -37,18 +37,37 @@ formatprompt = PromptTemplate(
 )
 
 chat = ChatOpenAI(temperature=0, openai_api_key=openai_api_key, model_name="gpt-3.5-turbo", max_tokens=2000)
-prompt = input("Pick a topic: ")
-messages = chatprompt.format_messages(subject=prompt)
-result = chat.invoke(messages)
-while True:
-    print(result.content)
-    messages.append(result)
-    prompt = input("Response: ")
-    if (prompt=="Q"):
-        break
-    messages.append(HumanMessage(content=prompt))
+#prompt = input("Pick a topic: ")
+#messages = chatprompt.format_messages(subject=prompt)
+#result = chat.invoke(messages)
+#while True:
+#    print(result.content)
+#    messages.append(result)
+#    prompt = input("Response: ")
+#    if (prompt=="Q"):
+#        break
+#    messages.append(HumanMessage(content=prompt))
+#    result = chat.invoke(messages)
+#prompt = listprompt.format(content=result.content)
+#result = chat.invoke(prompt)
+#list = listparser.parse(result.content)
+#print(list)
+
+def makeList(topic): #Makes list directly from topics
+    messages = chatprompt.format_messages(subject=topic)
     result = chat.invoke(messages)
-prompt = listprompt.format(content=result.content)
-result = chat.invoke(prompt)
-list = listparser.parse(result.content)
-print(list)
+    list = formatList(result.content)
+    return list
+
+def formatList(listText): #takes a list of topics as a string and parses it
+    print("parsing")
+    prompt = listprompt.format(content=listText)
+    result = chat.invoke(prompt)
+    list = listparser.parse(result.content)
+    return list
+
+#make a response from original topic
+def startPlanChat(topic):
+    messages = chatprompt.format_messages(subject=topic)
+    result = chat.invoke(messages)
+    return result
