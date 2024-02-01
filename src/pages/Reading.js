@@ -1,38 +1,16 @@
-import logo from './logo.svg';
-import './App.css';
+import logo from '../logo.svg';
+import '../App.css';
 import { useState } from 'react';
 import * as React from 'react';
 import Button from '@mui/joy/Button';
 import '@fontsource/inter';
 import {
-  BrowserRouter,
   createBrowserRouter,
   RouterProvider,
-  Routes,
-  Route
 } from "react-router-dom";
-import Practice from "./pages/Practice.js"
-import Reading from "./pages/Reading.js"
-
-function App() {
-
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/">
-          <Route index element={<Home />}/>
-          <Route path="practice" element={<Practice />} />
-          <Route path="reading" element={<Reading />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
 
 
-
-}
-
-function Home() {
+function Reading() {
   const [topic, setTopic] = useState('');
 
   async function generateTopics() {
@@ -51,7 +29,7 @@ function Home() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          Edit <code>src/App.js,</code> and save to reload. reading
         </p>
         <a
           className="App-link"
@@ -71,10 +49,7 @@ function Home() {
   );
 }
 
-
-
-
-export default App;
+export default Reading;
 
 //Need components for text input, multiple choice question
 //
