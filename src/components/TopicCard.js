@@ -4,7 +4,7 @@ import { useState } from 'react';
 import * as React from 'react';
 import Button from '@mui/joy/Button';
 import '@fontsource/inter';
-import { Card, CssBaseline, Divider, Sheet, Typography } from '@mui/joy';
+import { Card, CssBaseline, Divider, Sheet, Typography, autocompleteClasses } from '@mui/joy';
 import List from '@mui/joy/List';
 import ListItem from '@mui/joy/ListItem';
 import ListItemDecorator from '@mui/joy/ListItemDecorator';
@@ -22,6 +22,10 @@ need to improve topics screen:
 contain the topics together better in some kind of box
 clearly indicate the current topic
 show any per topic information, number of exercises left or something. Do later
+TODO:
+Make the button actually work
+add more details to topics section (maybe dont handle here...)
+make topics section look nicer
 */
 
 function TopicCard({title, currentTopic, nextTopics, numDone, numTotal}) {
@@ -29,8 +33,10 @@ function TopicCard({title, currentTopic, nextTopics, numDone, numTotal}) {
     <Card
     variant='outlined'
     sx={{
-        margin: 3,
+        //margin: 3,
         maxWidth: 400,
+        width: 300,
+        minWidth: 200,
         //padding: 1.5
     }}
     >

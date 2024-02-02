@@ -5,19 +5,40 @@ import * as React from 'react';
 import Button from '@mui/joy/Button';
 import '@fontsource/inter';
 import TopicCard from '../components/TopicCard';
+import { Grid, Sheet } from '@mui/joy';
+
 /*
 Make home page, shows different topics generated, button to make new one
-Will be a grid of cards showing details of each topic. will need a card component
+Make a grid of TopicCard components, obtain this from backend when ready.
+Make top bar with stuff in it
+Have a button to make a new topic.
 */
 
 
 
 export function Home() {
+  let empty = Array.apply(null, Array(5)).map(function () {})
 
-
-    return (
+  return (
+    <>
+      <Sheet sx={{minHeight: 50, backgroundColor: 'gainsboro'}}>
+        <Button sx={{margin: 1}}>Create new</Button>
+      </Sheet>
+      <Grid container spacing={3} sx={{ flexGrow: 1, padding: 3}}>
+      {empty.map((item, index) => (
+        <Grid>
         <TopicCard title='Pizza' currentTopic='Pizza dough' nextTopics={['Rolling dough', 'Pizza sauce', 'Pizza toppings']} numDone={5} numTotal={12}/>
-    )
+        </Grid>
+      ))}
+    </Grid>
+    </>
+
+
+
+
+
+     
+  )
 }
 
 
