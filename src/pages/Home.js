@@ -16,7 +16,7 @@ export function Home() {
 
 
     return (
-        <TopicCard topic='Pizza'/>
+        <TopicCard title='Pizza' currentTopic='Pizza dough' nextTopics={['Rolling dough', 'Pizza sauce', 'Pizza toppings']} numDone={5} numTotal={12}/>
     )
 }
 

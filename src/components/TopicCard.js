@@ -24,7 +24,7 @@ clearly indicate the current topic
 show any per topic information, number of exercises left or something. Do later
 */
 
-function TopicCard({topic}) {
+function TopicCard({title, currentTopic, nextTopics, numDone, numTotal}) {
   return (
     <Card
     variant='outlined'
@@ -35,26 +35,30 @@ function TopicCard({topic}) {
     }}
     >
         <div>
-        <Typography level="h4" sx={{verticalAlign:'top'}}>{topic}</Typography>
+        <Typography level="h4" sx={{verticalAlign:'top'}}>{title}</Typography>
         <Divider />
         <Typography level="title-md" sx={{padding: 0}}>Current Topics:</Typography>
         <Sheet variant="soft" sx={{ padding: 0.5, borderRadius: 3 }}>
           
           <Typography level="body-md" textColor="neutral.700">
-          <b>Pizza dough</b><br />
-          Rolling dough<br />
-          Pizza sauce<br />
-          Pizza toppings</Typography>
+          <b>{currentTopic}</b><br />
+          {nextTopics.map((item, index) => (
+            <>
+              {item} <br />
+            </>
+          ))}
+
+          </Typography>
         </Sheet>
         </div>
 
-        <LinearProgress determinate value={50} thickness={28}>
+        <LinearProgress determinate value={(numDone/numTotal)*100} thickness={28}>
             <Typography 
             level="body-sm"
             fontWeight="medium"
             textColor="common.black"
             sx={{ mixBlendMode: 'multiply' }}>
-            5/10 Topics Completed
+            {numDone}/{numTotal} Topics Completed
             </Typography>
         </LinearProgress>
         <Button>Continue</Button>
