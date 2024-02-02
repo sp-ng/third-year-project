@@ -29,7 +29,7 @@ function Practice() {
   return (
     <AQMultChoice
      question={'What is the most popular pizza topping in the United States?'}
-     wrong={['Mushrooms', 'Anchovies', 'Pepperoni', 'Pineapple']}
+     wrong={['Mushrooms', 'Anchovies', 'Pineapple']}
      correct={'Pepperoni'}
      />
   );

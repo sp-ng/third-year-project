@@ -51,6 +51,13 @@ function QMultChoice() {
 }
 
 function AQMultChoice({question, correct, wrong}) {
+  let unshuffled = [correct].concat(wrong)
+  let items = unshuffled
+  .map(value => ({ value, sort: Math.random() }))
+  .sort((a, b) => a.sort - b.sort)
+  .map(({ value }) => value)
+
+
   return (
     <Sheet
     sx={{
@@ -67,7 +74,7 @@ function AQMultChoice({question, correct, wrong}) {
     }}
     variant="outlined"
     >
-      <Typography level="h4">What is the most popular pizza topping in the United States?</Typography>
+      <Typography level="h4">{question}</Typography>
       <Typography level="body-sm">Pick one answer</Typography>
       <RadioGroup aria-label="Your plan" name="people" defaultValue="Individual">
       <List
@@ -79,7 +86,7 @@ function AQMultChoice({question, correct, wrong}) {
           '--ListItemDecorator-size': '32px',
         }}
       >
-        {['Mushrooms', 'Anchovies', 'Pepperoni', 'Pineapple'].map((item, index) => (
+        {items.map((item, index) => (
           <ListItem variant="outlined" key={item} sx={{ boxShadow: 'sm' }}>
             <Radio
               overlay

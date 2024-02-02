@@ -13,6 +13,14 @@ import {
 } from "react-router-dom";
 import Practice from "./pages/Practice.js"
 import Reading from "./pages/Reading.js"
+//import Home from "./pages/Home.js"
+import {HomePlaceholder, Home} from './pages/Home.js';
+
+
+/*
+Make home page, shows different topics generated, button to make new one
+topic page shows the current practice/reading section you are on, sidebar/top bar with info. can have an overview page.
+*/
 
 function App() {
 
@@ -27,54 +35,8 @@ function App() {
       </Routes>
     </BrowserRouter>
   );
-
-
-
 }
-
-function Home() {
-  const [topic, setTopic] = useState('');
-
-  async function generateTopics() {
-    alert(topic);
-    const response = await fetch('http://localhost:5000/generateQuestion?' + new URLSearchParams({topic: topic}));
-    console.log("WE GOT THE RESPONSE");
-    console.log(response.json());
-    console.log("did u see it?");
-  }
-
-
-
-
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <h1>{topic}</h1>
-        <label>
-          <input value={topic} onChange={e => setTopic(e.target.value)} />
-        </label>
-        <Button variant="solid" onClick={generateTopics}>Do shit</Button>
-      </header>
-    </div>
-  );
-}
-
-
-
 
 export default App;
 
 //Need components for text input, multiple choice question
-//
