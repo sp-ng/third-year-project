@@ -4,9 +4,10 @@ import { useState } from 'react';
 import * as React from 'react';
 import Button from '@mui/joy/Button';
 import '@fontsource/inter';
-
+import TopicCard from '../components/TopicCard';
 /*
 Make home page, shows different topics generated, button to make new one
+Will be a grid of cards showing details of each topic. will need a card component
 */
 
 
@@ -15,9 +16,7 @@ export function Home() {
 
 
     return (
-        <div>
-            'hello'
-        </div>
+        <TopicCard topic='Pizza'/>
     )
 }
 
