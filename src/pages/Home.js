@@ -9,9 +9,12 @@ import { Grid, Sheet } from '@mui/joy';
 
 /*
 Make home page, shows different topics generated, button to make new one
-Make a grid of TopicCard components, obtain this from backend when ready.
-Make top bar with stuff in it
-Have a button to make a new topic.
+Make a grid of TopicCard components, obtain this from backend when ready. -- DONE
+Make top bar with stuff in it -- DONE
+Have a button to make a new topic. -- DONE
+
+Make buttons send you to practice page
+
 */
 
 
@@ -21,7 +24,7 @@ export function Home() {
 
   return (
     <>
-      <Sheet sx={{minHeight: 50, backgroundColor: 'gainsboro'}}>
+      <Sheet sx={{minHeight: 50, backgroundColor: 'background.level2'}}>
         <Button sx={{margin: 1}}>Create new</Button>
       </Sheet>
       <Grid container spacing={3} sx={{ flexGrow: 1, padding: 3}}>
