@@ -15,6 +15,10 @@ Have a button to make a new topic. -- DONE
 
 Make buttons send you to practice page
 
+seperate progress bar and the topic overview into seperate subcomponents. good chance to improve the topic overview
+
+center the boxes...
+
 */
 
 

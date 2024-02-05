@@ -4,7 +4,7 @@ import { useState } from 'react';
 import * as React from 'react';
 import Button from '@mui/joy/Button';
 import '@fontsource/inter';
-import { CssBaseline, Sheet, Typography } from '@mui/joy';
+import { CssBaseline, Sheet, Textarea, Typography } from '@mui/joy';
 import List from '@mui/joy/List';
 import ListItem from '@mui/joy/ListItem';
 import ListItemDecorator from '@mui/joy/ListItemDecorator';
@@ -17,7 +17,36 @@ Get the layout looking correct
 Find the best way to automatically set the component fields
 Functionality to press buttons to check answer
 Figure out how right or wrong answer selected is propagated to the rest of the page and backend
+
+COMPONENTS:
+Mult choice -- made
+Free response -- made
+Chat
 */
+
+export function FreeResponse() {
+  return (
+    <Sheet
+    sx={{
+      width: 600,
+      mx: 'auto', // margin left & right
+      my: 4, // margin top & bottom
+      py: 3, // padding top & bottom
+      px: 2, // padding left & right
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 2,
+      borderRadius: 'sm',
+      boxShadow: 'md',
+    }}
+    variant="outlined"
+    >
+      <Typography level="h4">Explain the optimal method of putting toppings on pizza</Typography>
+      <Textarea placeholder='Give a written answer here...' minRows={4}></Textarea>
+      <Button sx={{marginLeft: 'auto'}}>Get Feedback</Button>
+    </Sheet>
+  )
+}
 
 function QMultChoice() {
   return (
@@ -50,7 +79,7 @@ function QMultChoice() {
   );
 }
 
-function AQMultChoice({question, correct, wrong}) {
+export function AQMultChoice({question, correct, wrong}) {
   let unshuffled = [correct].concat(wrong)
   let items = unshuffled
   .map(value => ({ value, sort: Math.random() }))
@@ -109,6 +138,7 @@ function AQMultChoice({question, correct, wrong}) {
         ))}
       </List>
       </RadioGroup>
+      <Button sx={{marginLeft: 'auto'}}>Check Answer</Button>
     </Sheet>
     
   )

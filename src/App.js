@@ -12,7 +12,7 @@ import {
   Route
 } from "react-router-dom";
 import Practice from "./pages/Practice.js"
-import Reading from "./pages/Reading.js"
+import {Reading, ReadingTest} from "./pages/Reading.js"
 //import Home from "./pages/Home.js"
 import {HomePlaceholder, Home} from './pages/Home.js';
 
@@ -30,7 +30,7 @@ function App() {
         <Route path="/">
           <Route index element={<Home />}/>
           <Route path="practice" element={<Practice />} />
-          <Route path="reading" element={<Reading />} />
+          <Route path="reading" element={<ReadingTest />} />
         </Route>
       </Routes>
     </BrowserRouter>
