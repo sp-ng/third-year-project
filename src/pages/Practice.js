@@ -10,7 +10,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import {AQMultChoice, FreeResponse} from '../components/Questions';
-import {Topics} from '../components/Common';
+import {Topics, Progress} from '../components/Common';
 import Reading from './Reading';
 import Check from '@mui/icons-material/Check';
 import { DonutLargeSharp } from '@mui/icons-material';
@@ -25,7 +25,7 @@ make components for free response and random reading material -- DONE
 setup props for free response and reading material -- DONE
 
 turn topic list into a component? accepts nested list and some indicator of current position -- DONE
-can do the same for the stepper
+can do the same for the stepper -- DONE
 
 
 make a component for the progress bar
@@ -47,33 +47,6 @@ function Practice() {
     console.log(response.json());
     console.log("did u see it?");
   }
-  /*
-  Pizza Dough:
-
-Types of Flour for Pizza Dough
-Kneading Techniques
-Rolling Dough:
-
-Rolling Pin Techniques
-Tips for a Crispy Crust
-Pizza Sauce:
-
-Homemade Tomato Sauce
-Herb and Spice Infusions
-Pizza Toppings:
-
-Classic vs. Creative Toppings
-Balancing Flavors and Textures
-Baking Pizza:
-
-Choosing the Right Oven Temperature
-Baking Surfaces (Stone, Steel, Pan)
-
-
-
-  */
-
-
 
   return (
     <div style={{display: 'flex', height: '100vh', justifyContent: 'space-between', alignContent: "stretch"}}>
@@ -91,27 +64,8 @@ Baking Surfaces (Stone, Steel, Pan)
               </Typography>
           </LinearProgress>
           <Divider />
-          {/*
-          <div style={{paddingLeft: '20px', marginBottom: 'auto'}}>
-          <Typography level="title-lg" sx={{verticalAlign:'top'}}>Pizza dough</Typography>
-          <Typography level="title-md" sx={{verticalAlign:'top', marginLeft: '10px'}}>Types of Flour for Pizza Dough</Typography>
-          <Typography level="body-md" sx={{verticalAlign:'top', marginLeft: '10px'}}>Kneading Techniques</Typography>
-          <Typography level="body-lg" sx={{verticalAlign:'top'}}>Rolling dough</Typography>
-          <Typography level="body-md" sx={{verticalAlign:'top', marginLeft: '10px'}}>Rolling Pin Techniques</Typography>
-          <Typography level="body-md" sx={{verticalAlign:'top', marginLeft: '10px'}}>Tips for a Crispy Crust</Typography>
-          <Typography level="body-lg" sx={{verticalAlign:'top'}}>Pizza sauce</Typography>
-          <Typography level="body-md" sx={{verticalAlign:'top', marginLeft: '10px'}}>Homemade Tomato Sauce</Typography>
-          <Typography level="body-md" sx={{verticalAlign:'top', marginLeft: '10px'}}>Herb and Spice Infusions</Typography>
-          <Typography level="body-lg" sx={{verticalAlign:'top'}}>Pizza toppings</Typography>
-          <Typography level="body-md" sx={{verticalAlign:'top', marginLeft: '10px'}}>Classic vs. Creative Toppings</Typography>
-          <Typography level="body-md" sx={{verticalAlign:'top', marginLeft: '10px'}}>Balanacing Flavors and Textures</Typography>
-          <Typography level="body-lg" sx={{verticalAlign:'top'}}>Baking Pizza</Typography>
-          <Typography level="body-md" sx={{verticalAlign:'top', marginLeft: '10px'}}>Oven Temperature</Typography>
-          <Typography level="body-md" sx={{verticalAlign:'top', marginLeft: '10px'}}>Baking Surfaces</Typography>
-          </div>
-          */}
           {
-          <Topics sx={{paddingLeft: '20px'}} topics={[['Pizza Dough', 'Types of Flour'],['Rolling Dough', 'Rolling Pin Techniques', 'Tips for a Crispy Crust'],['Pizza Sauce', 'Homemade Tomato Sauce', 'Herb and Spice Infusions']]}/>
+          <Topics position={2} sx={{paddingLeft: '20px'}} topics={[['Pizza Dough', 'Types of Flour'],['Rolling Dough', 'Rolling Pin Techniques', 'Tips for a Crispy Crust'],['Pizza Sauce', 'Homemade Tomato Sauce', 'Herb and Spice Infusions']]}/>
           }
           </Box>        
         <Button variant='outlined' sx={{margin: 'auto auto 20px 20px'}}>Go back</Button>     
@@ -122,6 +76,7 @@ Baking Surfaces (Stone, Steel, Pan)
       <Box sx={{display: 'flex', flexDirection: 'column', flexGrow: '1'}}>
         <Box sx={{backgroundColor: 'background.level2', padding: '20px'}}>
           <Typography level="title-lg" sx={{marginBottom: '5px', textAlign: 'center'}}>Types of Flour for Pizza Dough</Typography>
+          {/*
           <Stepper size="sm">
           <Step
             indicator={
@@ -135,6 +90,8 @@ Baking Surfaces (Stone, Steel, Pan)
           <Step indicator={<StepIndicator variant="solid" color="primary"><Check /></StepIndicator>}>Free Response</Step>
           <Step indicator={<StepIndicator variant="solid" color="neutral">5</StepIndicator>}>Multiple Choice</Step>
           </Stepper>
+          */}
+          <Progress position={0} items={['test','test2','test3','test4']}/>
         </Box>
         <div style={{margin: '0 auto'}}>
           {/*
@@ -162,6 +119,3 @@ Baking Surfaces (Stone, Steel, Pan)
 }
 
 export default Practice;
-
-//Need components for text input, multiple choice question
-//
