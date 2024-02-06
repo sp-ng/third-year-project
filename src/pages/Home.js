@@ -32,11 +32,24 @@ export function Home() {
         <Button sx={{margin: 1}}>Create new</Button>
       </Sheet>
       <Grid container spacing={3} sx={{ flexGrow: 1, padding: 3}}>
+      {/*
       {empty.map((item, index) => (
         <Grid>
         <TopicCard title='Pizza' currentTopic='Pizza dough' nextTopics={['Rolling dough', 'Pizza sauce', 'Pizza toppings']} numDone={5} numTotal={12}/>
         </Grid>
       ))}
+      */}
+      <Grid>
+      <TopicCard title='Pizza' currentTopic='Pizza dough' nextTopics={['Rolling dough', 'Pizza sauce', 'Pizza toppings']} numDone={1} numTotal={5}/>
+      </Grid>
+      <Grid>
+      <TopicCard title='Photography Basics' currentTopic='Camera types' nextTopics={['Understanding exposure', 'Composition techniques', 'Editing software']} numDone={0} numTotal={4} />
+
+      </Grid>
+      <Grid>
+      <TopicCard title='Fitness Routine' currentTopic='Warm-up exercises' nextTopics={['Strength training', 'Cardio workouts', 'Cool-down stretches']} numDone={1} numTotal={4} />
+
+      </Grid>
     </Grid>
     </>
 

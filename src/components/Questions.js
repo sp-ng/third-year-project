@@ -24,7 +24,7 @@ Free response -- made
 Chat
 */
 
-export function FreeResponse() {
+export function FreeResponse({question}) {
   return (
     <Sheet
     sx={{
@@ -41,7 +41,7 @@ export function FreeResponse() {
     }}
     variant="outlined"
     >
-      <Typography level="h4">Explain the optimal method of putting toppings on pizza</Typography>
+      <Typography level="h4">{question}</Typography>
       <Textarea placeholder='Give a written answer here...' minRows={4}></Textarea>
       <Button sx={{marginLeft: 'auto'}}>Get Feedback</Button>
     </Sheet>

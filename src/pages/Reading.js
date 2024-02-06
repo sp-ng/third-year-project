@@ -10,7 +10,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-export function Reading() {
+export function Reading({title, text}) {
   return (
     <Sheet
     sx={{
@@ -27,10 +27,10 @@ export function Reading() {
     }}
     variant="outlined"
     >
-      <Typography level="h4">How to make pizza dough</Typography>
+      <Typography level="h4">{title}</Typography>
       <Sheet variant="outlined" sx={{ padding: 0.5, borderRadius: 3 }}>
         <Typography level="body-md" textColor="neutral.700">
-        To craft the perfect pizza dough, start by combining all-purpose flour, warm water, active dry yeast, salt, and a drizzle of olive oil in a mixing bowl. Allow the yeast to activate, forming a frothy layer on the water's surface. Gradually incorporate the flour and knead the mixture until it transforms into a smooth and elastic dough. Let it rest, covered, to let the yeast work its magic in rising the dough. Once it doubles in size, punch it down, shape it into your desired crust, and voilà—a homemade pizza dough ready to be adorned with your favorite toppings before a flavorful trip to the oven.  
+        {text}  
         </Typography>
       </Sheet>
     </Sheet>
