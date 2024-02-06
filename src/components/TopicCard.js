@@ -11,6 +11,7 @@ import ListItemDecorator from '@mui/joy/ListItemDecorator';
 import Radio from '@mui/joy/Radio';
 import RadioGroup from '@mui/joy/RadioGroup';
 import LinearProgress from '@mui/joy/LinearProgress';
+import {ProgressBar} from './Common';
 /*
 A card that will show details about each topic, clicking on it or on a button will direct you to that course
 Deatils:
@@ -57,7 +58,7 @@ function TopicCard({title, currentTopic, nextTopics, numDone, numTotal}) {
           </Typography>
         </Sheet>
         </div>
-
+        {/*
         <LinearProgress determinate value={(numDone/numTotal)*100} thickness={28}>
             <Typography 
             level="body-sm"
@@ -67,6 +68,9 @@ function TopicCard({title, currentTopic, nextTopics, numDone, numTotal}) {
             {numDone}/{numTotal} Topics Completed
             </Typography>
         </LinearProgress>
+          
+        */}
+        <ProgressBar numDone={3} numTotal={5}/>
         <Button>Continue</Button>
     </Card>
   );

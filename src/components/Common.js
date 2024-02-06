@@ -4,7 +4,7 @@ import { useState } from 'react';
 import * as React from 'react';
 import Button from '@mui/joy/Button';
 import '@fontsource/inter';
-import { CssBaseline, Sheet, Textarea, Typography, Box, Stepper, Step, StepIndicator} from '@mui/joy';
+import { CssBaseline, Sheet, Textarea, Typography, Box, Stepper, Step, StepIndicator, LinearProgress} from '@mui/joy';
 import List from '@mui/joy/List';
 import ListItem from '@mui/joy/ListItem';
 import ListItemDecorator from '@mui/joy/ListItemDecorator';
@@ -41,7 +41,7 @@ export function Topics({sx, topics, position}) {
     )
 }
 
-export function Progress({sx, items, position}) {
+export function ProgressStepper({sx, items, position}) {
     //Takes list of items, puts it into a stepper, indicates current progress at an item based on position
     let curPos = 0;
     let children = [];
@@ -65,6 +65,19 @@ export function Progress({sx, items, position}) {
     )
 }
 
+export function ProgressBar({sx, numDone, numTotal}) {
+    return (
+        <LinearProgress sx={sx} determinate value={(numDone/numTotal)*100} thickness={28}>
+            <Typography 
+            level="body-sm"
+            fontWeight="medium"
+            textColor="common.black"
+            sx={{ mixBlendMode: 'multiply' }}>
+            {numDone}/{numTotal} Topics Completed
+            </Typography>
+        </LinearProgress>
+    )
+}
 
 
 

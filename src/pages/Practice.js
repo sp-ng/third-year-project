@@ -10,7 +10,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import {AQMultChoice, FreeResponse} from '../components/Questions';
-import {Topics, Progress} from '../components/Common';
+import {Topics, ProgressStepper, ProgressBar} from '../components/Common';
 import Reading from './Reading';
 import Check from '@mui/icons-material/Check';
 import { DonutLargeSharp } from '@mui/icons-material';
@@ -28,7 +28,7 @@ turn topic list into a component? accepts nested list and some indicator of curr
 can do the same for the stepper -- DONE
 
 
-make a component for the progress bar
+make a component for the progress bar 
 
 Add some functionality: 
 Go back link works correctly
@@ -54,6 +54,8 @@ function Practice() {
         <Box>
           <Typography level="h2" sx={{verticalAlign:'top', textAlign: 'center' }}>Pizza</Typography>
           <Divider />
+          <ProgressBar sx={{margin: '10px'}} numDone={3} numTotal={5}/>
+          {/*
           <LinearProgress determinate value={(0/5)*100} thickness={28} sx={{margin: '10px'}}>
               <Typography 
               level="body-sm"
@@ -63,6 +65,7 @@ function Practice() {
               0/5 Topics Completed
               </Typography>
           </LinearProgress>
+          */}
           <Divider />
           {
           <Topics position={2} sx={{paddingLeft: '20px'}} topics={[['Pizza Dough', 'Types of Flour'],['Rolling Dough', 'Rolling Pin Techniques', 'Tips for a Crispy Crust'],['Pizza Sauce', 'Homemade Tomato Sauce', 'Herb and Spice Infusions']]}/>
@@ -91,7 +94,7 @@ function Practice() {
           <Step indicator={<StepIndicator variant="solid" color="neutral">5</StepIndicator>}>Multiple Choice</Step>
           </Stepper>
           */}
-          <Progress position={0} items={['test','test2','test3','test4']}/>
+          <ProgressStepper position={0} items={['test','test2','test3','test4']}/>
         </Box>
         <div style={{margin: '0 auto'}}>
           {/*
