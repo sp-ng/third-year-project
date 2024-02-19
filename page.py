@@ -59,7 +59,7 @@ def close_connection(exception):
 
 
 testCourse = ['topics', [('History of Pizza', ['Origins of pizza', 'Evolution of pizza throughout history', 'Famous pizza styles from different regions']), ('Pizza Ingredients', ['Dough', 'Sauce', 'Cheese', 'Toppings', 'Herbs and spices']), ('Pizza Making Techniques', ['Traditional hand-tossed pizza', 'Thin crust pizza', 'Deep-dish pizza', 'Neapolitan pizza', 'Wood-fired pizza']), ('Pizza Styles from Around the World', ['Neapolitan pizza (Italy)', 'New York-style pizza (United States)', 'Chicago-style pizza (United States)', 'Margherita pizza (Italy)', 'Sicilian pizza (Italy)', 'Greek pizza (Greece)', 'Hawaiian pizza (Canada)']), ('Pizza Toppings and Combinations', ['Classic toppings (pepperoni, mushrooms, onions, etc.)', 'Vegetarian toppings', 'Gourmet toppings', 'Unusual pizza combinations']), ('Pizza Culture and Traditions', ['Pizza in popular culture (movies, TV shows, etc.)', 'Pizza festivals and events', 'Pizza etiquette and traditions in different countries']), ('Health and Nutrition', ['Nutritional value of pizza', 'Healthy pizza alternatives', 'Gluten-free and vegan pizza options']), ('Pizza Industry and Business', ['Pizza chains and franchises', 'Pizza delivery services', 'Pizza marketing and advertising']), ('Pizza Recipes and DIY Pizza', ['Homemade pizza recipes', 'Pizza dough recipes', 'Creative pizza ideas']), ('Pizza Critique and Reviews', ['Pizza restaurant reviews', 'Pizza rating systems', 'Pizza competitions and awards'])]]
-
+testSteps = ['Read','Free Response','Read','Free Response','Multiple Choice']
 
 #database calls
 #setup course: receives topic: generates course, adds it to DB, returns the courseID.
@@ -67,15 +67,35 @@ testCourse = ['topics', [('History of Pizza', ['Origins of pizza', 'Evolution of
 #get progress data using progressID
 #get data data using dataID
 #TODO:
-#Implement progress system
+#Implement progress system - make database call
+#
+#Setup getData, will need a function that given a dataID and the course JSON it will return the path to the ID so you can use the data to generate stuff
+#
+#
+#
 #Figure out how you will specify what type of content each piece of data will be, setup with course generation
-#
-#
+#If you want to have any intelligent generation of the steps within a topic u need to store it in the DB.
+#Just add another layer to the tree JSON -- DONE
 #
 #
 
 
-
+#given a dataID and the course JSON it will return the path to the dataID so you can use the data to generate stuff
+def searchTree(tree, ID):
+    for topics in tree[1]:
+        topic = topics[0]
+        for subtopics in topics[1]:
+            subtopic = subtopics[0]
+            #print(subtopics)
+            for steps in subtopics[1]:
+                step = steps[0]
+                dataID = steps[1]
+                #print("DataID and ID are: " + str(dataID) + " " + str(ID))
+                if (int(dataID) == int(ID)):
+                    #print("found")
+                    return (topic, subtopic, step)
+    #print("failed")
+    return ()
 
 
 
@@ -92,10 +112,15 @@ def makeCourse():
         #print(unit)
         for inner_index, topic in enumerate(unit[1]):
             #print(topic)
-            pkeyProgress = insert_row("INSERT INTO progress (courseID, progress) VALUES(?, NULL)", (pkey,))
-            pkeyData = insert_row("INSERT INTO data (courseID, data) VALUES(?, NULL)", (pkey,))
-            topicList[1][index][1][inner_index] = (topic, pkeyData, pkeyProgress)
-            #print(topic)
+            #add the extra layer
+            topicList[1][index][1][inner_index] = (topic, copy.deepcopy(testSteps))
+            for stepIndex, step in enumerate(topicList[1][index][1][inner_index][1]):
+                #print(step)
+                pkeyProgress = insert_row("INSERT INTO progress (courseID, progress) VALUES(?, NULL)", (pkey,))
+                pkeyData = insert_row("INSERT INTO data (courseID, data) VALUES(?, NULL)", (pkey,))
+                topicList[1][index][1][inner_index][1][stepIndex] = (step, pkeyData, pkeyProgress)
+            #add an extra layer containing the specific exercises to be done here. 
+
             #for each one of these just make a new row in each table, get its ID, add it into the list    
     #iterate through the leaves and make empty database rows for each one
     #print(json.dumps(topicList))
@@ -116,16 +141,23 @@ def getData():
     args = request.args
     id = args["dataID"]
     data = query_db("SELECT courseID, data FROM data WHERE dataID=?",(id,))
+    print("doing shit")
     if (data[0][1] == None):
+        print("not cached")
         #1. get json from courses with matching courseID       
         coursestr = query_db("SELECT course FROM courses WHERE courseID=?",(data[0][0],))
         course = json.loads(coursestr[0][0])[1]       
         #2. search through json to find the leaf with matching dataID
-        for topic in course:
-            for subtopic in topic[1]:
-                if int(subtopic[1]) == int(id):
-                    topicname = subtopic[0]
-                    print("Generating new topic about: " + str(topicname))
+        searchFields = searchTree(json.loads(coursestr[0][0]), id)
+        print(searchFields)
+        topicname = searchFields[1]
+        #for topic in course:
+        #    for subtopic in topic[1]:
+        #        print("something")
+        #        if int(subtopic[1][0][1]) == int(id):
+        #            print(subtopic[0])
+        #            topicname = subtopic[0]
+        #            print("Generating new topic about: " + str(topicname))
         #3. use the topic found to generate content
         result = makeQuestion(topicname)
         print(result)
@@ -133,6 +165,7 @@ def getData():
         insert_row("UPDATE data SET data=? WHERE dataID=?", (json.dumps(result),id))
         return jsonify(result)
     else:        
+        print("cached")
         return jsonify(json.loads(data[0][1]))
     
 
