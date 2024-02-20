@@ -126,3 +126,11 @@ while True:
 def makeQuestion(topic):
     result = MultChoiceChain.invoke({"topic": topic})
     return result.dict()
+
+def makeMultChoice(topic):
+    result = MultChoiceChain.invoke({"topic": topic})
+    return result.dict()
+
+def makeFreeResponse(topic):
+    result = FreeResponseChain.invoke({"topic": topic})
+    return result.dict()

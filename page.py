@@ -6,7 +6,8 @@ from flask import Flask, request, jsonify, g
 from flask_cors import CORS
 import json
 from plan import makeList
-from practice import makeQuestion
+from practice import makeQuestion, makeMultChoice, makeFreeResponse
+from reading import makeReading
 import sqlite3
 import copy
 app = Flask(__name__)
@@ -68,16 +69,13 @@ testSteps = ['Read','Free Response','Read','Free Response','Multiple Choice']
 #get data data using dataID
 #TODO:
 #Implement progress system - make database call
-#
-#Setup getData, will need a function that given a dataID and the course JSON it will return the path to the ID so you can use the data to generate stuff
-#
-#
-#
-#Figure out how you will specify what type of content each piece of data will be, setup with course generation
-#If you want to have any intelligent generation of the steps within a topic u need to store it in the DB.
-#Just add another layer to the tree JSON -- DONE
+#for now simply mark as completed or not. -- DONE
+#integrate stuff into frontend now!
 #
 #
+#
+
+
 
 
 #given a dataID and the course JSON it will return the path to the dataID so you can use the data to generate stuff
@@ -127,12 +125,22 @@ def makeCourse():
     insert_row("UPDATE courses SET course = ? WHERE courseID=?", (json.dumps(topicList),pkey))
     return jsonify(topicList)
 
+
+@app.route('/setProgress', methods=['GET', 'POST'])
+def setProgress():
+    #sets the data column to whatever text is provided
+    args = request.args
+    progress = args["progress"]
+    id = args["id"]
+    insert_row("UPDATE progress SET progress=? WHERE progressID=?", (progress,id))
+
 @app.route('/getProgress', methods=['GET'])
 def getProgress():
-    
+    #returns whatever text is in the data column
     args = request.args
-    topic = args["topic"]
-
+    id = args["id"]
+    progress = query_db('SELECT progress FROM progress WHERE progressID=?',(id,))
+    return jsonify(progress)
 
 @app.route('/getData', methods=['GET'])
 def getData():
@@ -147,19 +155,22 @@ def getData():
         #1. get json from courses with matching courseID       
         coursestr = query_db("SELECT course FROM courses WHERE courseID=?",(data[0][0],))
         course = json.loads(coursestr[0][0])[1]       
-        #2. search through json to find the leaf with matching dataID
+        #2. search through json to find the data relating to the matching dataID
         searchFields = searchTree(json.loads(coursestr[0][0]), id)
         print(searchFields)
         topicname = searchFields[1]
-        #for topic in course:
-        #    for subtopic in topic[1]:
-        #        print("something")
-        #        if int(subtopic[1][0][1]) == int(id):
-        #            print(subtopic[0])
-        #            topicname = subtopic[0]
-        #            print("Generating new topic about: " + str(topicname))
+        type = searchFields[2]
+        print(type)
+        match type:
+            case 'Read':
+                result = makeReading(topicname)
+            case 'Free Response':
+                result = makeFreeResponse(topicname)
+            case 'Multiple Choice':
+                result = makeMultChoice(topicname)
+
         #3. use the topic found to generate content
-        result = makeQuestion(topicname)
+        #result = makeQuestion(topicname)
         print(result)
         #4. insert it into the DB and return the data
         insert_row("UPDATE data SET data=? WHERE dataID=?", (json.dumps(result),id))
