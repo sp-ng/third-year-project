@@ -95,6 +95,33 @@ def searchTree(tree, ID):
     #print("failed")
     return ()
 
+@app.route('/getCourses', methods=['GET'])
+def getCourses():
+    data = query_db("SELECT * FROM courses")
+    result = []
+    #print(data)
+    for row in data:
+        print("bhfejfjsafvbusdjbg")
+        print(row[1])
+        if (row[1] != None):
+            rowDict= {
+            'courseID': row[0],
+            'data': json.loads(row[1])
+            }
+            result.append(rowDict)
+    return jsonify(result)
+@app.route('/getCourse', methods=['GET'])
+def getCourse():
+    args = request.args
+    id = args["courseID"]
+    data = query_db("SELECT * FROM courses WHERE courseID=?",(id,))
+    print(data)
+    result = {
+        'courseID': data[0][0],
+        'data': json.loads(data[0][1])
+    }
+    return jsonify(result)
+
 
 
 @app.route('/makeCourse', methods=['GET'])
