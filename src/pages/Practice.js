@@ -10,7 +10,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import {AQMultChoice, FreeResponse} from '../components/Questions';
-import {Topics} from '../components/Common';
+import {Topics, Steps} from '../components/Common';
 import Reading from './Reading';
 import Check from '@mui/icons-material/Check';
 import { DonutLargeSharp } from '@mui/icons-material';
@@ -41,7 +41,7 @@ Fill in sidebar based on variables
 
 PRACTICE PAGE:
 Set topics on left side -- DONE
-Set steps on top
+Set steps on top -- DONE
 show main content (need small change to backend to save what type of content it is)
 implement previous and next buttonsz
 
@@ -60,6 +60,7 @@ function Practice() {
   }
   const [course, setCourse] = useState([]);
   const [topicList, setTopicList] = useState([]);
+  const [steps, setSteps] = useState(['Loading']);
   const [item, setItem] = useState([]);
 
   //get list of subtopics for use in the topic component
@@ -83,22 +84,41 @@ function Practice() {
     }
     return processedList
   }
+  //given a course and a leaf dataID it will return the steps at that leaf and the position 
+  function getSteps(course, ID) {
+    console.log('getting steps')
+    let courseRaw = course['data'][1]
+    let processedList = []
+    for (let topic of courseRaw) {
+      for (let subTopic of topic[1]) {
+        let steps = subTopic[1].map(([firstItem]) => firstItem)
+        for (let step in subTopic[1]) {
+          if (subTopic[1][step][1] == ID) {
+            console.log('returning steps and position')
+            console.log([steps, step])
+            return [steps, step]
+          }
+        }
+      }
+    }
+    return []
+  }
 
 
 
   //if itemID is undefined find the first element in the tree and go to it
   async function getCourse(ID) {
     const response = await fetch('http://localhost:5000/getCourse?' + new URLSearchParams({courseID: ID}));
-    console.log("WE GOT THE RESPONSE");
+    //console.log("WE GOT THE RESPONSE");
     let result = await response.json()
-    console.log(result);
+    //console.log(result);
     return(result)    
   }  
   async function getItem(ID) {
     const response = await fetch('http://localhost:5000/getData?' + new URLSearchParams({dataID: ID}));
-    console.log("WE GOT THE RESPONSE");
+    //console.log("WE GOT THE RESPONSE");
     let result = await response.json()
-    console.log(result);
+    //console.log(result);
     return(result)    
   }  
   if (course.length == 0) {
@@ -106,7 +126,12 @@ function Practice() {
       setCourse(course)
       setTopicList(getTopicList(course))
       console.log("thing")
+      let stepTemp = getSteps(course, itemID)
+      console.log(stepTemp)
+      setSteps(stepTemp)      
       console.log(course)
+      console.log('steps')
+      console.log(steps)
       console.log(getTopicList(course))
 
 
@@ -116,13 +141,13 @@ function Practice() {
   if (item.length == 0) {
     getItem(itemID).then(item => {
       setItem(item)
-      console.log("thing")
-      console.log(item)
-      console.log("stufff")
+      //console.log("thing")
+      //console.log(item)
+      //console.log("stufff")
     })
   }
-  console.log('topiclist:')
-  console.log(topicList)
+  //console.log('topiclist:')
+  //console.log(topicList)
 
 
 
@@ -210,6 +235,7 @@ Baking Surfaces (Stone, Steel, Pan)
       <Box sx={{display: 'flex', flexDirection: 'column', flexGrow: '1'}}>
         <Box sx={{backgroundColor: 'background.level2', padding: '20px'}}>
           <Typography level="title-lg" sx={{marginBottom: '5px', textAlign: 'center'}}>Types of Flour for Pizza Dough</Typography>
+          {/*
           <Stepper size="sm">
           <Step
             indicator={
@@ -223,6 +249,8 @@ Baking Surfaces (Stone, Steel, Pan)
           <Step indicator={<StepIndicator>4</StepIndicator>}>Free Response</Step>
           <Step indicator={<StepIndicator>5</StepIndicator>}>Multiple Choice</Step>
           </Stepper>
+          */}
+          <Steps steps={steps[0]} position={steps[1]} />
         </Box>
         <div style={{margin: '0 auto'}}>
           <AQMultChoice

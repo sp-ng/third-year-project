@@ -4,12 +4,13 @@ import { useState } from 'react';
 import * as React from 'react';
 import Button from '@mui/joy/Button';
 import '@fontsource/inter';
-import { CssBaseline, Sheet, Textarea, Typography, Box } from '@mui/joy';
+import { CssBaseline, Sheet, Textarea, Typography, Box, Stepper, Step, StepIndicator  } from '@mui/joy';
 import List from '@mui/joy/List';
 import ListItem from '@mui/joy/ListItem';
 import ListItemDecorator from '@mui/joy/ListItemDecorator';
 import Radio from '@mui/joy/Radio';
 import RadioGroup from '@mui/joy/RadioGroup';
+import Check from '@mui/icons-material/Check';
 
 
 export function Topics({topics, position}) {
@@ -38,6 +39,39 @@ export function Topics({topics, position}) {
     )
 }
 
+export function Steps({steps, position}) {
+    //position = 3
+    if (!Array.isArray(steps)) {
+        steps = ['Loading'];
+    }
+    return (
+        <Stepper size="sm">
+            {
+                steps.map((step, index) => (
+                    <Step indicator={<StepIndicator color={index < position ? "primary" :"neutral"} variant={index <= position ? "solid" : "soft"}>{index < position ? <Check /> : index}</StepIndicator>}>{step}</Step>
+                ))
+            }
+        </Stepper>
+    )
+}
+
+export function StepsExample({steps, posistion}) {
+    return (
+        <Stepper size="sm">
+            <Step
+            indicator={
+                <StepIndicator variant="solid" color="primary"><Check /></StepIndicator>
+            }
+            >
+            Read
+            </Step>
+            <Step indicator={<StepIndicator variant="solid" color="primary"><Check /></StepIndicator>}>Free Response</Step>
+            <Step indicator={<StepIndicator variant="solid" color="neutral">3</StepIndicator>}>Read</Step>
+            <Step indicator={<StepIndicator>4</StepIndicator>}>Free Response</Step>
+            <Step indicator={<StepIndicator>5</StepIndicator>}>Multiple Choice</Step>
+        </Stepper>
+    )
+}
 
 
 function Test() {
