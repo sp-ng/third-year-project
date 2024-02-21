@@ -30,13 +30,26 @@ chatprompt = ChatPromptTemplate.from_messages([
      It must always be a list of topics and subtopics."""),
     ("human", "Generate a list of topics with subtopics for the following subject: {subject}"),
 ])
+
+topicprompt = PromptTemplate(
+    template="Create topics and subtopics for studying the following topic: {topic}.\n Format the above list to create a JSON with nested lists according to the following provided format instructions. Format instructions: {format_instructions}",
+    input_variables=["topic"],
+    partial_variables={"format_instructions": format_instructions}
+)
+topictestprompt = PromptTemplate(
+    template="Create topics and their corresponding subtopics for studying the following topic: {topic}.\n Format instructions: {format_instructions}",
+    input_variables=["topic"],
+    partial_variables={"format_instructions": format_instructions}
+)
+
 formatprompt = PromptTemplate(
     template="{content}.\n answer by generating a list of topics and subtopics using the following format:\n {format_instructions}",
     input_variables=["content"],
     partial_variables={"format_instructions": format_instructions}
 )
 
-chat = ChatOpenAI(temperature=0, openai_api_key=openai_api_key, model_name="gpt-3.5-turbo", max_tokens=2000)
+chat = ChatOpenAI(temperature=0, openai_api_key=openai_api_key, model_name="gpt-3.5-turbo", max_tokens=4000)
+topicChain = topictestprompt | chat | listparser
 #prompt = input("Pick a topic: ")
 #messages = chatprompt.format_messages(subject=prompt)
 #result = chat.invoke(messages)
@@ -54,10 +67,13 @@ chat = ChatOpenAI(temperature=0, openai_api_key=openai_api_key, model_name="gpt-
 #print(list)
 
 def makeList(topic): #Makes list directly from topics
-    messages = chatprompt.format_messages(subject=topic)
-    result = chat.invoke(messages)
-    list = formatList(result.content)
-    return list
+    #messages = chatprompt.format_messages(subject=topic)
+    result = topicChain.invoke({"topic": topic})
+    #messages = topicprompt.format(topic=topic)
+    #result = chat.invoke(messages)
+    #list = listparser.parse(result.content)
+    #list = formatList(result.content)
+    return result
 
 def formatList(listText): #takes a list of topics as a string and parses it
     print("parsing")

@@ -59,8 +59,8 @@ def close_connection(exception):
 
 
 
-testCourse = ['topics', [('History of Pizza', ['Origins of pizza', 'Evolution of pizza throughout history', 'Famous pizza styles from different regions']), ('Pizza Ingredients', ['Dough', 'Sauce', 'Cheese', 'Toppings', 'Herbs and spices']), ('Pizza Making Techniques', ['Traditional hand-tossed pizza', 'Thin crust pizza', 'Deep-dish pizza', 'Neapolitan pizza', 'Wood-fired pizza']), ('Pizza Styles from Around the World', ['Neapolitan pizza (Italy)', 'New York-style pizza (United States)', 'Chicago-style pizza (United States)', 'Margherita pizza (Italy)', 'Sicilian pizza (Italy)', 'Greek pizza (Greece)', 'Hawaiian pizza (Canada)']), ('Pizza Toppings and Combinations', ['Classic toppings (pepperoni, mushrooms, onions, etc.)', 'Vegetarian toppings', 'Gourmet toppings', 'Unusual pizza combinations']), ('Pizza Culture and Traditions', ['Pizza in popular culture (movies, TV shows, etc.)', 'Pizza festivals and events', 'Pizza etiquette and traditions in different countries']), ('Health and Nutrition', ['Nutritional value of pizza', 'Healthy pizza alternatives', 'Gluten-free and vegan pizza options']), ('Pizza Industry and Business', ['Pizza chains and franchises', 'Pizza delivery services', 'Pizza marketing and advertising']), ('Pizza Recipes and DIY Pizza', ['Homemade pizza recipes', 'Pizza dough recipes', 'Creative pizza ideas']), ('Pizza Critique and Reviews', ['Pizza restaurant reviews', 'Pizza rating systems', 'Pizza competitions and awards'])]]
-testSteps = ['Read','Free Response','Read','Free Response','Multiple Choice']
+testCourse = ['test', [('History of Pizza', ['Origins of pizza', 'Evolution of pizza throughout history', 'Famous pizza styles from different regions']), ('Pizza Ingredients', ['Dough', 'Sauce', 'Cheese', 'Toppings', 'Herbs and spices']), ('Pizza Making Techniques', ['Traditional hand-tossed pizza', 'Thin crust pizza', 'Deep-dish pizza', 'Neapolitan pizza', 'Wood-fired pizza']), ('Pizza Styles from Around the World', ['Neapolitan pizza (Italy)', 'New York-style pizza (United States)', 'Chicago-style pizza (United States)', 'Margherita pizza (Italy)', 'Sicilian pizza (Italy)', 'Greek pizza (Greece)', 'Hawaiian pizza (Canada)']), ('Pizza Toppings and Combinations', ['Classic toppings (pepperoni, mushrooms, onions, etc.)', 'Vegetarian toppings', 'Gourmet toppings', 'Unusual pizza combinations']), ('Pizza Culture and Traditions', ['Pizza in popular culture (movies, TV shows, etc.)', 'Pizza festivals and events', 'Pizza etiquette and traditions in different countries']), ('Health and Nutrition', ['Nutritional value of pizza', 'Healthy pizza alternatives', 'Gluten-free and vegan pizza options']), ('Pizza Industry and Business', ['Pizza chains and franchises', 'Pizza delivery services', 'Pizza marketing and advertising']), ('Pizza Recipes and DIY Pizza', ['Homemade pizza recipes', 'Pizza dough recipes', 'Creative pizza ideas']), ('Pizza Critique and Reviews', ['Pizza restaurant reviews', 'Pizza rating systems', 'Pizza competitions and awards'])]]
+testSteps = ['Read','Free Response','Multiple Choice']
 
 #database calls
 #setup course: receives topic: generates course, adds it to DB, returns the courseID.
@@ -69,6 +69,10 @@ testSteps = ['Read','Free Response','Read','Free Response','Multiple Choice']
 #get data data using dataID
 #TODO:
 #Implement progress system - make database call
+#make DB call that returns progress data for the entire course
+#
+#
+
 #for now simply mark as completed or not. -- DONE
 #integrate stuff into frontend now!
 #
@@ -129,12 +133,13 @@ def makeCourse():
     args = request.args
     topic = args["topic"]
     print(topic)
-    #topics = makeList(topic)
-    #topicList = list(map(list, topics))
-    topicList = copy.deepcopy(testCourse)    
+    topics = makeList(topic)
+    topicList = list(map(list, topics))[0]
+    #topicList = copy.deepcopy(testCourse)    
     pkey = insert_row("INSERT INTO courses (course) VALUES(NULL)")
+    print(topicList)
     for index, unit in enumerate(topicList[1]): 
-        #print(unit)
+        print(unit)
         for inner_index, topic in enumerate(unit[1]):
             #print(topic)
             #add the extra layer
