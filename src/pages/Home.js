@@ -12,33 +12,110 @@ Make home page, shows different topics generated, button to make new one
 Make a grid of TopicCard components, obtain this from backend when ready. -- DONE
 Make top bar with stuff in it -- DONE
 Have a button to make a new topic. -- DONE
-
 Make buttons send you to practice page
-
 seperate progress bar and the topic overview into seperate subcomponents. good chance to improve the topic overview
-
 center the boxes...
+*/
+
+/*
+eval day TODO:
+link everything to backend:
+1. display all courses on front page
+2. set routing for the practice pages: page/courseID/dataID will link to each item
+3. link everything on the course pages to backend
+
+MAIN PAGE:
+Make the continue button actually functional
+Implement the create new button
+Make the progress bar work (need to implement a backend route for that)
+
+PRACTICE PAGE:
+setup routing + default URL -- DONE
+show topics on left
+show steps up top
+progressbar on top left (same as main page)
+request and show the main content (with different elements based on the DB response)
+
+implement assessment for mult choice and free response
+
+
+ESSENTIAL TODO:
+MAIN PAGE:
+Make the continue button actually functional
+Implement the create new button
+
+PRACTICE PAGE:
+Set topics on left side
+Set steps on top
+show main content (need small change to backend to save what type of content it is)
+implement previous and next buttons
+
+
+
 
 */
 
 
 
-export function Home() {
-  let empty = Array.apply(null, Array(5)).map(function () {})
 
+
+export function Home() {
+  let empty = Array.apply(null, Array(2)).map(function () {})
+  async function getCourses() {
+    let topic = "goofy"
+    const response = await fetch('http://localhost:5000/getCourses');
+    console.log("WE GOT THE RESPONSE");
+    let result = await response.json()
+    console.log(result);
+    return(result)    
+    //console.log(result['PromiseResult']);
+    console.log("did u see it?");
+  }
+  
+  const [courseList, setCourseList] = useState([]);
+  if (courseList.length == 0) {
+    getCourses().then(courses => {
+      setCourseList(courses)
+      console.log("thing")
+      console.log(courses)
+      console.log("stufff")
+    })
+  }
+  console.log("BRUH")
+  console.log(courseList)
+  console.log("pls just work")
   return (
     <>
       <Sheet sx={{minHeight: 50, backgroundColor: 'background.level2'}}>
         <Button sx={{margin: 1}}>Create new</Button>
       </Sheet>
       <Grid container spacing={3} sx={{ flexGrow: 1, padding: 3}}>
-      {/*
-      {empty.map((item, index) => (
+      
+      {/*empty.map((item, index) => (
         <Grid>
         <TopicCard title='Pizza' currentTopic='Pizza dough' nextTopics={['Rolling dough', 'Pizza sauce', 'Pizza toppings']} numDone={5} numTotal={12}/>
         </Grid>
+      ))*/}
+
+      {courseList.map((item, index) => (
+        <Grid>
+        <TopicCard title={item['data'][0]} currentTopic='Pizza dough' nextTopics={item['data'][1].map(([firstItem]) => firstItem)} numDone={5} numTotal={12}/>
+        </Grid>
       ))}
+      
+
+      {/*
+        () => {
+            console.log(topics)
+            let children = [];
+            for (let topic of topics) {
+                console.log(topic)
+                children.push(<Typography level="body-lg" sx={{verticalAlign:'top'}}>{topic[0]}</Typography>)
+            }
+            return children;
+        }       
       */}
+      {/*
       <Grid>
       <TopicCard title='Pizza' currentTopic='Pizza dough' nextTopics={['Rolling dough', 'Pizza sauce', 'Pizza toppings']} numDone={1} numTotal={5}/>
       </Grid>
@@ -50,6 +127,7 @@ export function Home() {
       <TopicCard title='Fitness Routine' currentTopic='Warm-up exercises' nextTopics={['Strength training', 'Cardio workouts', 'Cool-down stretches']} numDone={1} numTotal={4} />
 
       </Grid>
+    */}
     </Grid>
     </>
 

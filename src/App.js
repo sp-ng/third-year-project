@@ -9,7 +9,8 @@ import {
   createBrowserRouter,
   RouterProvider,
   Routes,
-  Route
+  Route,
+  useParams
 } from "react-router-dom";
 import Practice from "./pages/Practice.js"
 import {Reading, ReadingTest} from "./pages/Reading.js"
@@ -31,6 +32,8 @@ function App() {
           <Route index element={<Home />}/>
           <Route path="practice" element={<Practice />} />
           <Route path="reading" element={<ReadingTest />} />
+          <Route path=":courseID" element={<Practice />} />
+          <Route path=":courseID/:itemID" element={<Practice />} />
         </Route>
       </Routes>
     </BrowserRouter>
