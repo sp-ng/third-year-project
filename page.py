@@ -2,7 +2,7 @@
 #then make some shitty form
 import sys
 print(sys.path)
-from flask import Flask, request, jsonify, g
+from flask import Flask, request, jsonify, g, Response
 from flask_cors import CORS
 import json
 from plan import makeList
@@ -28,7 +28,7 @@ def init_db():
         BEGIN;
         CREATE TABLE IF NOT EXISTS courses(courseID INTEGER PRIMARY KEY, course);
         CREATE TABLE IF NOT EXISTS progress(progressID INTEGER PRIMARY KEY, courseID INTEGER, progress);
-        CREATE TABLE IF NOT EXISTS data(dataID INTEGER PRIMARY KEY, courseID INTEGER, data);
+        CREATE TABLE IF NOT EXISTS data(dataID INTEGER PRIMARY KEY, courseID INTEGER, data, completed, progressData);
         COMMIT;
         """)
         res = db.cursor().execute("SELECT name FROM sqlite_master")
@@ -114,6 +114,7 @@ def getCourses():
             }
             result.append(rowDict)
     return jsonify(result)
+
 @app.route('/getCourse', methods=['GET'])
 def getCourse():
     args = request.args
@@ -146,9 +147,10 @@ def makeCourse():
             topicList[1][index][1][inner_index] = (topic, copy.deepcopy(testSteps))
             for stepIndex, step in enumerate(topicList[1][index][1][inner_index][1]):
                 #print(step)
-                pkeyProgress = insert_row("INSERT INTO progress (courseID, progress) VALUES(?, NULL)", (pkey,))
-                pkeyData = insert_row("INSERT INTO data (courseID, data) VALUES(?, NULL)", (pkey,))
-                topicList[1][index][1][inner_index][1][stepIndex] = (step, pkeyData, pkeyProgress)
+                #pkeyProgress = insert_row("INSERT INTO progress (courseID, progress) VALUES(?, NULL)", (pkey,))
+                pkeyData = insert_row("INSERT INTO data (courseID, data, completed) VALUES(?, NULL, 0)", (pkey,))
+                #topicList[1][index][1][inner_index][1][stepIndex] = (step, pkeyData, pkeyProgress)
+                topicList[1][index][1][inner_index][1][stepIndex] = (step, pkeyData)
             #add an extra layer containing the specific exercises to be done here. 
 
             #for each one of these just make a new row in each table, get its ID, add it into the list    
@@ -160,19 +162,58 @@ def makeCourse():
 
 @app.route('/setProgress', methods=['GET', 'POST'])
 def setProgress():
-    #sets the data column to whatever text is provided
+    #sets completed column to 0 or 1
+    #optionally sets progress data if supplied (must be JSON)
     args = request.args
-    progress = args["progress"]
+    progress = args["completed"]
     id = args["id"]
-    insert_row("UPDATE progress SET progress=? WHERE progressID=?", (progress,id))
+    if "progressData" in args:
+        data = args["progressData"]
+        print("thingy")
+        print(data)
+        insert_row("UPDATE data SET completed=?, progressData=? WHERE dataID=?", (progress,data,id))
+    else:
+        insert_row("UPDATE data SET completed=? WHERE dataID=?", (progress,id))
+    return (Response(),200)
 
 @app.route('/getProgress', methods=['GET'])
 def getProgress():
-    #returns whatever text is in the data column
+    #returns completion and whatever extra data is contained in the progressData column
     args = request.args
     id = args["id"]
-    progress = query_db('SELECT progress FROM progress WHERE progressID=?',(id,))
-    return jsonify(progress)
+    progress = query_db('SELECT completed, progressData FROM data WHERE dataID=?',(id,))
+    response = dict()
+    response["completed"] = progress[0][0]
+    if progress[0][1] != None:
+        response["progressData"] = json.loads(progress[0][1])
+    return jsonify(response)
+
+@app.route('/getCourseProgress', methods=['GET'])
+def getCourseProgress():
+    #count how many subtopics have been completed overall
+    #1. get course structure
+    args = request.args
+    id = args["courseID"]
+    data = query_db("SELECT * FROM courses WHERE courseID=?",(id,))
+    course = json.loads(data[0][1])[1]
+    print(course)
+    #2. iterate through the subtopics, checking if they are fully completed or not.
+    subTopics = 0
+    completed = 0
+    for topic in course:
+        print(topic)
+        for subtopic in topic[1]:
+            subTopics += 1
+            print(subtopic)
+            complete = True
+            for step in subtopic[1]:
+                complete = query_db("SELECT completed FROM data WHERE dataID=?",(step[1],))[0][0]
+                print(complete)
+                if int(complete) != 1:
+                    complete = False
+            if complete:
+                completed += 1
+    return jsonify(subTopics, completed)
 
 @app.route('/getData', methods=['GET'])
 def getData():
@@ -190,6 +231,7 @@ def getData():
         #2. search through json to find the data relating to the matching dataID
         searchFields = searchTree(json.loads(coursestr[0][0]), id)
         print(searchFields)
+    
         topicname = searchFields[1]
         type = searchFields[2]
         print(type)
