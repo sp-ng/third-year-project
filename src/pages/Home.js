@@ -6,53 +6,43 @@ import Button from '@mui/joy/Button';
 import '@fontsource/inter';
 import TopicCard from '../components/TopicCard';
 import { Grid, Sheet } from '@mui/joy';
+import Textarea from '@mui/joy/Textarea';
 
 /*
-Make home page, shows different topics generated, button to make new one
-Make a grid of TopicCard components, obtain this from backend when ready. -- DONE
-Make top bar with stuff in it -- DONE
-Have a button to make a new topic. -- DONE
-Make buttons send you to practice page
-seperate progress bar and the topic overview into seperate subcomponents. good chance to improve the topic overview
-center the boxes...
-*/
+TODO:
+NOW:
+setup api routes for progress info: -- DONE
+set and get progress of specific item -- DONE
+get progress over entire course or maybe over a subtopic -- DONE
+merge the tables? -- DONE
 
-/*
-eval day TODO:
-link everything to backend:
-1. display all courses on front page
-2. set routing for the practice pages: page/courseID/dataID will link to each item
-3. link everything on the course pages to backend
+OVERALL:
+reorganize frontend code:
+split neatly into API calls, data processing, and page interactions
 
 MAIN PAGE:
-Make the continue button actually functional
-Implement the create new button
-Make the progress bar work (need to implement a backend route for that)
+Implement the create new button -- DONE
+Make the progress bar work (need to implement a backend route for that) -- DONE
+Make topic overview component for the topicCard (just to make it look better)?
 
 PRACTICE PAGE:
-setup routing + default URL -- DONE
-show topics on left
-show steps up top
+Default URL for course
+Make topic list not look garbage, implement position indicator
 progressbar on top left (same as main page)
-request and show the main content (with different elements based on the DB response)
-
+get forward and back buttons on the practice page working better
 implement assessment for mult choice and free response
+Clickable topic list
 
+BACKEND:
+Use more information than just the subtopic name to generate content. subtopic name is often not enough
+Setup smarter generation of the types of questions
 
-ESSENTIAL TODO:
-MAIN PAGE:
-Make the continue button actually functional
-Implement the create new button
-
-PRACTICE PAGE:
-Set topics on left side
-Set steps on top
-show main content (need small change to backend to save what type of content it is)
-implement previous and next buttons
-
-
-
-
+EXTRA:
+Chat for feedback and questioning
+Content regeneration
+RAG
+research wtf ur doing lol
+make a not shit database
 */
 
 
@@ -61,12 +51,34 @@ implement previous and next buttons
 
 export function Home() {
   let empty = Array.apply(null, Array(2)).map(function () {})
+  const [topic, setTopic] = useState('');
+  
+  const handleClick = () => {
+    // Make the GET request
+    console.log("HOLY FUCK JUST FETCH")
+    fetch('http://127.0.0.1:5000/makeCourse?' + new URLSearchParams({topic: topic}))
+      .then(response => {
+        // Handle response as needed
+        if (response.ok) {
+          // If response is successful, refresh the page
+          window.location.reload();
+        } else {
+          // Handle error response
+          console.error('Error:', response.statusText);
+        }
+      })
+      .catch(error => {
+        // Handle network errors
+        console.error('Error:', error);
+      });
+  };
+
   async function getCourses() {
     let topic = "goofy"
     const response = await fetch('http://localhost:5000/getCourses');
-    console.log("WE GOT THE RESPONSE");
+    //console.log("WE GOT THE RESPONSE");
     let result = await response.json()
-    console.log(result);
+    //console.log(result);
     return(result)    
     //console.log(result['PromiseResult']);
     console.log("did u see it?");
@@ -76,18 +88,21 @@ export function Home() {
   if (courseList.length == 0) {
     getCourses().then(courses => {
       setCourseList(courses)
-      console.log("thing")
-      console.log(courses)
-      console.log("stufff")
+      //console.log("thing")
+      //console.log(courses)
+      //console.log("stufff")
     })
   }
-  console.log("BRUH")
-  console.log(courseList)
-  console.log("pls just work")
+  //console.log("BRUH")
+  //console.log(courseList)
+  //console.log("pls just work")
   return (
     <>
-      <Sheet sx={{minHeight: 50, backgroundColor: 'background.level2'}}>
-        <Button sx={{margin: 1}}>Create new</Button>
+      <Sheet sx={{minHeight: 50, backgroundColor: 'background.level2', display: 'flex', justifyContent: 'center'}}>
+        
+        
+        <Textarea maxRows={1} placeholder="Topic to generate..." label="Topic" value={topic} onChange={e => setTopic(e.target.value)} sx={{width: '400px',marginRight: 1, marginTop: 'auto', marginBottom: 'auto', maxHeight: '10px'}}/>
+        <Button sx={{margin: 1}} onClick={handleClick}>Create new</Button>
       </Sheet>
       <Grid container spacing={3} sx={{ flexGrow: 1, padding: 3}}>
       
@@ -99,7 +114,7 @@ export function Home() {
 
       {courseList.map((item, index) => (
         <Grid>
-        <TopicCard title={item['data'][0]} currentTopic='Pizza dough' nextTopics={item['data'][1].map(([firstItem]) => firstItem)} numDone={5} numTotal={12}/>
+        <TopicCard courseID={item['courseID']} title={item['data'][0]} link={item['courseID'] + "/" + item['data'][1][0][1][0][1][0][1]} nextTopics={item['data'][1].map(([firstItem]) => firstItem)} numDone={5} numTotal={12}/>
         </Grid>
       ))}
       

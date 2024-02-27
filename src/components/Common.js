@@ -15,8 +15,8 @@ import Check from '@mui/icons-material/Check';
 
 export function Topics({topics, position}) {
     //topics should be a nested list. first element of each sublist is the topic title.
-    console.log('RUNNING TOPICS WITH')
-    console.log(topics)
+    //console.log('RUNNING TOPICS WITH')
+    //console.log(topics)
     return (
         <Box>
         {   topics.map((sublist, index) => (
@@ -48,7 +48,7 @@ export function Steps({steps, position}) {
         <Stepper size="sm">
             {
                 steps.map((step, index) => (
-                    <Step indicator={<StepIndicator color={index < position ? "primary" :"neutral"} variant={index <= position ? "solid" : "soft"}>{index < position ? <Check /> : index}</StepIndicator>}>{step}</Step>
+                    <Step indicator={<StepIndicator color={index < position ? "primary" :"neutral"} variant={index <= position ? "solid" : "soft"}>{index < position ? <Check /> : (index + 1)}</StepIndicator>}>{step}</Step>
                 ))
             }
         </Stepper>

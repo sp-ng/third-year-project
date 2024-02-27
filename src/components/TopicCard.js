@@ -1,6 +1,6 @@
 import logo from '../logo.svg';
 import '../App.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import * as React from 'react';
 import Button from '@mui/joy/Button';
 import '@fontsource/inter';
@@ -11,6 +11,7 @@ import ListItemDecorator from '@mui/joy/ListItemDecorator';
 import Radio from '@mui/joy/Radio';
 import RadioGroup from '@mui/joy/RadioGroup';
 import LinearProgress from '@mui/joy/LinearProgress';
+import { Link } from 'react-router-dom';
 /*
 A card that will show details about each topic, clicking on it or on a button will direct you to that course
 Deatils:
@@ -28,7 +29,29 @@ add more details to topics section (maybe dont handle here...)
 make topics section look nicer
 */
 
-function TopicCard({title, currentTopic, nextTopics, numDone, numTotal}) {
+function TopicCard({title, currentTopic, nextTopics, courseID, numDone, numTotal, link}) {
+  const [progress, setProgress] = useState([1,1]);
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/getCourseProgress?courseID=' + courseID.toString());
+        const result = await response.json();
+        setProgress(result);
+      } catch (error) {
+        console.log("error")
+        console.log(error)
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [courseID]);
+
+
+
+
   return (
     <Card
     variant='outlined'
@@ -58,16 +81,19 @@ function TopicCard({title, currentTopic, nextTopics, numDone, numTotal}) {
         </Sheet>
         </div>
 
-        <LinearProgress determinate value={(numDone/numTotal)*100} thickness={28}>
+        <LinearProgress determinate value={(progress[1]/progress[0])*100} thickness={28}>
             <Typography 
             level="body-sm"
             fontWeight="medium"
             textColor="common.black"
             sx={{ mixBlendMode: 'multiply' }}>
-            {numDone}/{numTotal} Topics Completed
+            {progress[1]}/{progress[0]} Subtopics Completed
             </Typography>
         </LinearProgress>
-        <Button>Continue</Button>
+        <Link reloadDocument={true} to={link}>
+          <Button>Continue</Button>
+        </Link>
+        
     </Card>
   );
 }
