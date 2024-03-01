@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify, g, Response
 from flask_cors import CORS
 import json
 from plan import makeList
-from practice import makeQuestion, makeMultChoice, makeFreeResponse
+from practice import makeQuestion, makeMultChoice, makeFreeResponse, generateActivities
 from reading import makeReading
 import sqlite3
 import copy
@@ -105,8 +105,8 @@ def getCourses():
     result = []
     #print(data)
     for row in data:
-        print("bhfejfjsafvbusdjbg")
-        print(row[1])
+        #print("bhfejfjsafvbusdjbg")
+        #print(row[1])
         if (row[1] != None):
             rowDict= {
             'courseID': row[0],
@@ -120,7 +120,7 @@ def getCourse():
     args = request.args
     id = args["courseID"]
     data = query_db("SELECT * FROM courses WHERE courseID=?",(id,))
-    print(data)
+    #print(data)
     result = {
         'courseID': data[0][0],
         'data': json.loads(data[0][1])
@@ -131,20 +131,40 @@ def getCourse():
 
 @app.route('/makeCourse', methods=['GET'])
 def makeCourse():
+
+    #TODO:
+    #Implement using the activity chain to generate activities rather than using the premade ones
+    #
+    #
+    #
+    print("making course")
     args = request.args
     topic = args["topic"]
     print(topic)
     topics = makeList(topic)
     topicList = list(map(list, topics))[0]
+    print(topicList)
+    topicList[0]=topic
     #topicList = copy.deepcopy(testCourse)    
     pkey = insert_row("INSERT INTO courses (course) VALUES(NULL)")
-    print(topicList)
+    #print(topicList)
     for index, unit in enumerate(topicList[1]): 
-        print(unit)
-        for inner_index, topic in enumerate(unit[1]):
-            #print(topic)
+        #print(unit)
+        for inner_index, subtopic in enumerate(unit[1]):
+            print(subtopic)
+            print(f"{subtopic} in the context of {unit[0]} in the context of {topic}")
+            activities = generateActivities(f"{subtopic} in the context of {unit[0]} in the context of {topic}")['activities']
+            #print(activities)
+
+            #for activity_index, activity in enumerate(activities):
+            #    temp = [activity[0], 0, activity[1]]
+            #    activities[activity_index] = temp
+
+            print(activities)
+
+            topicList[1][index][1][inner_index] = (subtopic, activities)
             #add the extra layer
-            topicList[1][index][1][inner_index] = (topic, copy.deepcopy(testSteps))
+            #topicList[1][index][1][inner_index] = (subtopic, copy.deepcopy(testSteps))
             for stepIndex, step in enumerate(topicList[1][index][1][inner_index][1]):
                 #print(step)
                 #pkeyProgress = insert_row("INSERT INTO progress (courseID, progress) VALUES(?, NULL)", (pkey,))
@@ -169,8 +189,8 @@ def setProgress():
     id = args["id"]
     if "progressData" in args:
         data = args["progressData"]
-        print("thingy")
-        print(data)
+        #print("thingy")
+        #print(data)
         insert_row("UPDATE data SET completed=?, progressData=? WHERE dataID=?", (progress,data,id))
     else:
         insert_row("UPDATE data SET completed=? WHERE dataID=?", (progress,id))
@@ -196,19 +216,19 @@ def getCourseProgress():
     id = args["courseID"]
     data = query_db("SELECT * FROM courses WHERE courseID=?",(id,))
     course = json.loads(data[0][1])[1]
-    print(course)
+    #print(course)
     #2. iterate through the subtopics, checking if they are fully completed or not.
     subTopics = 0
     completed = 0
     for topic in course:
-        print(topic)
+        #print(topic)
         for subtopic in topic[1]:
             subTopics += 1
-            print(subtopic)
+            #print(subtopic)
             complete = True
             for step in subtopic[1]:
                 complete = query_db("SELECT completed FROM data WHERE dataID=?",(step[1],))[0][0]
-                print(complete)
+                #print(complete)
                 if int(complete) != 1:
                     complete = False
             if complete:
@@ -222,21 +242,23 @@ def getData():
     args = request.args
     id = args["dataID"]
     data = query_db("SELECT courseID, data FROM data WHERE dataID=?",(id,))
-    print("doing shit")
+    #print("doing shit")
     if (data[0][1] == None):
-        print("not cached")
+        #print("not cached")
         #1. get json from courses with matching courseID       
         coursestr = query_db("SELECT course FROM courses WHERE courseID=?",(data[0][0],))
         course = json.loads(coursestr[0][0])[1]       
         #2. search through json to find the data relating to the matching dataID
         searchFields = searchTree(json.loads(coursestr[0][0]), id)
+        print("SEARCH FIELDS:")
         print(searchFields)
     
         topicname = searchFields[1]
         type = searchFields[2]
+        print("TYPE:")
         print(type)
-        match type:
-            case 'Read':
+        match type[0]:
+            case 'Reading':
                 result = makeReading(topicname)
             case 'Free Response':
                 result = makeFreeResponse(topicname)
@@ -245,7 +267,7 @@ def getData():
 
         #3. use the topic found to generate content
         #result = makeQuestion(topicname)
-        print(result)
+        #print(result)
         #4. insert it into the DB and return the data
         insert_row("UPDATE data SET data=? WHERE dataID=?", (json.dumps(result),id))
         return jsonify(result)

@@ -11,15 +11,19 @@ from langchain.prompts.chat import ChatPromptTemplate
 from langchain.output_parsers import CommaSeparatedListOutputParser
 from typing import Deque, List, Optional, Tuple
 from langchain.output_parsers import PydanticOutputParser
-from pydantic import BaseModel, Field, validator
+from langchain_core.output_parsers import JsonOutputParser
+from langchain_core.pydantic_v1 import BaseModel, Field
+#from pydantic import BaseModel, Field, validator
 from langchain.vectorstores import FAISS
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders import DirectoryLoader
+from enum import Enum, IntEnum
 openai_api_key='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'
 openai_model_name="gpt-3.5-turbo-1106"
 chat = ChatOpenAI(temperature=0, openai_api_key=openai_api_key, model_name=openai_model_name, max_tokens=2000)
+chatJSON = ChatOpenAI(temperature=0, openai_api_key=openai_api_key, model_name="gpt-3.5-turbo", max_tokens=4000, model_kwargs={"response_format": {"type": "json_object"}})
 #replace loader with dir loader
 #replace splitter with recursive splitter
 #setup caching docs
@@ -123,6 +127,71 @@ while True:
     
     #list = MultChoiceParser.parse(result)
     #print(list)
+
+
+#Chain that takes in some topic and generates a list of reading material and questions in some useful way
+
+
+class Topics(BaseModel):
+    topics: List[Tuple[str, List[str]]]
+
+class ActivityEnum(str, Enum):
+    reading = 'Reading'
+    mult_choice = 'Multiple Choice'
+    free_response = 'Free Response'
+
+class Activities(BaseModel):
+    activities: List[Tuple[ActivityEnum, str]]
+
+ActivityParser = JsonOutputParser(pydantic_object=Activities)
+
+ActivityPrompt = PromptTemplate(
+    template="""Create a list of activities for someone to learn about {topic}. Each activity can either be reading (the user reads and learns about a part of the overall learning goal),
+    a multiple choice question, or a free response question. Every activity should have a specific topic that it should be about, this will be used to generate content at a later point,
+    do not generate the questions themselves.
+    Try to have good coverage in teaching each aspect of {topic} while also not having too many activities. 
+    Ensure questions about a topic have the the information needed taught in a reading activity beforehand. \n{format_instructions}\n
+    """,
+    input_variables=["topic"],
+    partial_variables={"format_instructions": ActivityParser.get_format_instructions()},
+)
+
+ActivityChain = ActivityPrompt | chatJSON | ActivityParser
+
+
+
+PActivityParser = JsonOutputParser()
+
+PActivityPrompt = PromptTemplate(
+    template="""Create a list of activities for someone to learn about {topic}. Each activity can either be reading (the user reads and learns about a part of the overall learning goal),
+    a multiple choice question, or a free response question and every activity should have a specific topic that it should be about. Do not generate the questions, only the topic that specic question would be about.
+    Try to have good coverage in teaching each aspect of {topic} and equally good coverage in providing practice. 
+    Ensure questions about a topic have the the information needed taught in a reading activity beforehand. \n{format_instructions}\n
+    """,
+    input_variables=["topic"],
+    partial_variables={"format_instructions": PActivityParser.get_format_instructions()},
+)
+
+PActivityChain = PActivityPrompt | chatJSON | PActivityParser
+
+
+
+def generateActivities(topic):
+    # print(PActivityParser.get_format_instructions())
+    #result = ActivityChain.invoke({"topic": topic})
+    # response = chatJSON.invoke(PActivityPrompt.format(topic=topic))
+    # print("RESULT######")
+    # print(response.content)
+    # result = PActivityParser.parse(response.content)
+    # print(result)
+    #print(ActivityParser.get_format_instructions())
+    response = chatJSON.invoke(ActivityPrompt.format(topic=topic))
+    #print("RESULT######")
+    #print(response.content)
+    result = ActivityParser.parse(response.content)
+    #print(result)
+    return result
+
 def makeQuestion(topic):
     result = MultChoiceChain.invoke({"topic": topic})
     return result.dict()
