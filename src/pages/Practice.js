@@ -83,13 +83,13 @@ function Practice() {
         tempList.push(subtopic[0])
         
         for (let step of subtopic[1]) {
-          console.log(step[1])
-          console.log(ID)
+          //console.log(step[1])
+          //console.log(ID)
           if (step[1] == ID) {
-              console.log('found position')
+              //console.log('found position')
               
-              console.log(pos1)
-              console.log(pos2)
+              //console.log(pos1)
+              //console.log(pos2)
               finalPos1 = pos1
               finalPos2 = pos2
           }
@@ -115,6 +115,7 @@ function Practice() {
         for (let step in subTopic[1]) {
           if (subTopic[1][step][1] == ID) {
             //console.log('returning steps and position')
+            //console.log(steps[0])
             //console.log([steps, step])
             return [steps, step]
           }
@@ -152,7 +153,8 @@ function Practice() {
       setTopicPos(allTopics[1])
       console.log("thing")
       let stepTemp = getSteps(course, itemID)
-      //console.log(stepTemp)
+      console.log("STEPS")
+      console.log(stepTemp)
       setSteps(stepTemp)
       setStep(stepTemp[0][stepTemp[1]])
       console.log(course)
@@ -214,7 +216,7 @@ Baking Surfaces (Stone, Steel, Pan)
     <div style={{display: 'flex', height: '100vh', justifyContent: 'space-between', alignContent: "stretch"}}>
       <Box sx={{position: 'sticky', top: '0', backgroundColor: 'background.level2', height: '100vh', width: '300px', borderColor: 'background.level3', borderWidth: '1px', display: 'flex', flexDirection: 'column'}}>
         <Box>
-          <Typography level="h2" sx={{verticalAlign:'top', textAlign: 'center' }}>Pizza</Typography>
+          <Typography level="h2" sx={{verticalAlign:'top', textAlign: 'center' }}>{course['data'] == undefined ? "" : course['data'][0]}</Typography>
           <Divider />
           <LinearProgress determinate value={(0/5)*100} thickness={28} sx={{margin: '10px'}}>
               <Typography 
@@ -234,8 +236,14 @@ Baking Surfaces (Stone, Steel, Pan)
 
           
           
-        </Box>        
-        <Button variant='outlined' sx={{margin: 'auto auto 20px 20px'}}>Go back</Button>     
+        </Box>  
+        <Box sx={{margin: 'auto auto 20px 20px'}}>
+          <Link to={"/"}>
+            <Button variant='outlined' >Go back</Button>     
+          </Link>    
+        </Box>
+  
+        
         
         
 
@@ -248,8 +256,8 @@ Baking Surfaces (Stone, Steel, Pan)
         <div style={{margin: '0 auto'}}>
           {
             (() => {
-              switch(step) {
-                case 'Read':
+              switch(step[0]) {
+                case 'Reading':
                   return <Reading title={allTopicList[topicPos[0]][topicPos[1] + 1]} text={item['content']}></Reading>
                 case 'Free Response':
                   return <FreeResponse question={item['question']}></FreeResponse>

@@ -28,6 +28,7 @@ Make topic overview component for the topicCard (just to make it look better)?
 PRACTICE PAGE:
 Default URL for course
 Make topic list not look garbage, implement position indicator
+clickable topic list
 progressbar on top left (same as main page)
 get forward and back buttons on the practice page working better
 implement assessment for mult choice and free response
@@ -35,7 +36,8 @@ Clickable topic list
 
 BACKEND:
 Use more information than just the subtopic name to generate content. subtopic name is often not enough
-Setup smarter generation of the types of questions
+Setup smarter generation of the types of questions -- DONE
+sort out overall course title. this probably needs to be a generated field -- DONE, just used the topic the user chose lol
 
 EXTRA:
 Chat for feedback and questioning
