@@ -13,9 +13,9 @@ import RadioGroup from '@mui/joy/RadioGroup';
 
 /*
 TODO:
-Get the layout looking correct
-Find the best way to automatically set the component fields
-Functionality to press buttons to check answer
+Get the layout looking correct -- DONE
+Find the best way to automatically set the component fields -- DONE
+Functionality to press buttons to check answer -- DO NOW
 Figure out how right or wrong answer selected is propagated to the rest of the page and backend
 
 COMPONENTS:
@@ -24,6 +24,7 @@ Free response -- made
 Chat
 */
 
+//implement checking the answer using some backend route
 export function FreeResponse({question}) {
   return (
     <Sheet
@@ -79,13 +80,19 @@ function QMultChoice() {
   );
 }
 
+//Implement checking the answer, and also progress somehow idk
 export function AQMultChoice({question, correct, wrong}) {
+
+  //const [items, setItems] = useState(false);
+
   let unshuffled = [correct].concat(wrong)
   let items = unshuffled
   .map(value => ({ value, sort: Math.random() }))
   .sort((a, b) => a.sort - b.sort)
   .map(({ value }) => value)
 
+  const [checking, setChecking] = useState(false);
+  
 
   return (
     <Sheet
@@ -116,7 +123,7 @@ export function AQMultChoice({question, correct, wrong}) {
         }}
       >
         {items.map((item, index) => (
-          <ListItem variant="outlined" key={item} sx={{ boxShadow: 'sm' }}>
+          <ListItem variant="outlined" key={item} sx={{backgroundColor: checking ? (item==correct) ? "success.200" : "danger.200" : "", boxShadow: 'sm' }}>
             <Radio
               overlay
               value={item}
@@ -138,7 +145,7 @@ export function AQMultChoice({question, correct, wrong}) {
         ))}
       </List>
       </RadioGroup>
-      <Button sx={{marginLeft: 'auto'}}>Check Answer</Button>
+      <Button onClick={() => {setChecking(true)}} sx={{marginLeft: 'auto'}}>Check Answer</Button>
     </Sheet>
     
   )

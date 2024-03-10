@@ -9,6 +9,24 @@ import { Grid, Sheet } from '@mui/joy';
 import Textarea from '@mui/joy/Textarea';
 
 /*
+Presentation TODO:
+implement checking questions
+pregenerate content
+improve prompts
+make script for the interactive chat demo
+PROGRESS TRACKING
+
+
+
+
+
+
+
+
+
+
+
+
 TODO:
 NOW:
 setup api routes for progress info: -- DONE
@@ -26,6 +44,7 @@ Make the progress bar work (need to implement a backend route for that) -- DONE
 Make topic overview component for the topicCard (just to make it look better)?
 
 PRACTICE PAGE:
+Make the questions fucking work
 Default URL for course
 Make topic list not look garbage, implement position indicator
 clickable topic list
@@ -35,9 +54,10 @@ implement assessment for mult choice and free response
 Clickable topic list
 
 BACKEND:
-Use more information than just the subtopic name to generate content. subtopic name is often not enough
+Use more information than just the subtopic name to generate content. subtopic name is often not enough -- DONE
 Setup smarter generation of the types of questions -- DONE
 sort out overall course title. this probably needs to be a generated field -- DONE, just used the topic the user chose lol
+fix title for reading material -- DONE
 
 EXTRA:
 Chat for feedback and questioning
@@ -57,7 +77,6 @@ export function Home() {
   
   const handleClick = () => {
     // Make the GET request
-    console.log("HOLY FUCK JUST FETCH")
     fetch('http://127.0.0.1:5000/makeCourse?' + new URLSearchParams({topic: topic}))
       .then(response => {
         // Handle response as needed

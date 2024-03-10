@@ -258,7 +258,7 @@ Baking Surfaces (Stone, Steel, Pan)
             (() => {
               switch(step[0]) {
                 case 'Reading':
-                  return <Reading title={allTopicList[topicPos[0]][topicPos[1] + 1]} text={item['content']}></Reading>
+                  return <Reading title={item['title']} text={item['content']}></Reading>
                 case 'Free Response':
                   return <FreeResponse question={item['question']}></FreeResponse>
                 case 'Multiple Choice':
