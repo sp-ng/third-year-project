@@ -42,6 +42,9 @@ db = FAISS.from_documents(texts, embeddings)
 retriever = db.as_retriever(search_kwargs={"k": 3})
  """
 #Multiple Choice
+
+#Define JSON schema
+#LangChain can also use this to generate formatting instructions for the model
 class MultipleChoice(BaseModel):
     question: str = Field(description="A multiple choice question")
     correct: str = Field(description="The correct answer to the multiple choice question")
@@ -51,11 +54,13 @@ class MultipleChoice(BaseModel):
 
 MultChoiceParser = PydanticOutputParser(pydantic_object=MultipleChoice)
 
+#Create prompt template to instruct the model based on an input topic
 MultChoicePrompt = PromptTemplate(
-    template="Create a multiple choice question based on the following topic: {topic}\n{format_instructions}",
+    template="Create a multiple choice question based on the following: {topic}\n{format_instructions}",
     input_variables=["topic"],
     partial_variables={"format_instructions": MultChoiceParser.get_format_instructions()},
 )
+#Link the prompt template, chat model, and parser together.
 MultChoiceChain = MultChoicePrompt | chat | MultChoiceParser
 
 #Free Response
@@ -189,7 +194,7 @@ def generateActivities(topic):
     #print("RESULT######")
     #print(response.content)
     result = ActivityParser.parse(response.content)
-    #print(result)
+    print(result)
     return result
 
 def makeQuestion(topic):

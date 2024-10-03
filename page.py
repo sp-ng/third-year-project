@@ -84,6 +84,7 @@ testSteps = ['Read','Free Response','Multiple Choice']
 
 #given a dataID and the course JSON it will return the path to the dataID so you can use the data to generate stuff
 def searchTree(tree, ID):
+    #print(tree)
     for topics in tree[1]:
         topic = topics[0]
         for subtopics in topics[1]:
@@ -95,7 +96,7 @@ def searchTree(tree, ID):
                 #print("DataID and ID are: " + str(dataID) + " " + str(ID))
                 if (int(dataID) == int(ID)):
                     #print("found")
-                    return (topic, subtopic, step)
+                    return (tree[0], topic, subtopic, step)
     #print("failed")
     return ()
 
@@ -235,6 +236,40 @@ def getCourseProgress():
                 completed += 1
     return jsonify(subTopics, completed)
 
+
+
+def generateData(id):
+    #1. get json from courses with matching courseID       
+    data = query_db("SELECT courseID, data FROM data WHERE dataID=?",(id,))
+    if data == None:
+        return '{}'
+    coursestr = query_db("SELECT course FROM courses WHERE courseID=?",(data[0][0],))
+    course = json.loads(coursestr[0][0])[1]       
+    #2. search through json to find the data relating to the matching dataID
+    searchFields = searchTree(json.loads(coursestr[0][0]), id)
+    print("SEARCH FIELDS:")
+    print(searchFields)
+
+    topicstr = f"{searchFields[3][1]} in the context of {searchFields[2]} in the context of {searchFields[1]} in the context of {searchFields[0]}"
+    type = searchFields[3]
+    print("TYPE:")
+    print(type)
+    match type[0]:
+        case 'Reading':
+            result = makeReading(topicstr)
+            result['title'] = searchFields[3][1]
+        case 'Free Response':
+            result = makeFreeResponse(topicstr)
+        case 'Multiple Choice':
+            result = makeMultChoice(topicstr)
+
+    #3. use the topic found to generate content
+    #result = makeQuestion(topicname)
+    #print(result)
+    #4. insert it into the DB and return the data
+    insert_row("UPDATE data SET data=? WHERE dataID=?", (json.dumps(result),id))
+    return jsonify(result)
+
 @app.route('/getData', methods=['GET'])
 def getData():
     #get data at provided dataID. 
@@ -244,33 +279,39 @@ def getData():
     data = query_db("SELECT courseID, data FROM data WHERE dataID=?",(id,))
     #print("doing shit")
     if (data[0][1] == None):
-        #print("not cached")
-        #1. get json from courses with matching courseID       
-        coursestr = query_db("SELECT course FROM courses WHERE courseID=?",(data[0][0],))
-        course = json.loads(coursestr[0][0])[1]       
-        #2. search through json to find the data relating to the matching dataID
-        searchFields = searchTree(json.loads(coursestr[0][0]), id)
-        print("SEARCH FIELDS:")
-        print(searchFields)
+        
+        # #print("not cached")
+        # #1. get json from courses with matching courseID       
+        # coursestr = query_db("SELECT course FROM courses WHERE courseID=?",(data[0][0],))
+        # course = json.loads(coursestr[0][0])[1]       
+        # #2. search through json to find the data relating to the matching dataID
+        # searchFields = searchTree(json.loads(coursestr[0][0]), id)
+        # print("SEARCH FIELDS:")
+        # print(searchFields)
     
-        topicname = searchFields[1]
-        type = searchFields[2]
-        print("TYPE:")
-        print(type)
-        match type[0]:
-            case 'Reading':
-                result = makeReading(topicname)
-            case 'Free Response':
-                result = makeFreeResponse(topicname)
-            case 'Multiple Choice':
-                result = makeMultChoice(topicname)
+        # topicstr = f"{searchFields[3][1]} in the context of {searchFields[2]} in the context of {searchFields[1]} in the context of {searchFields[0]}"
+        # type = searchFields[3]
+        # print("TYPE:")
+        # print(type)
+        # match type[0]:
+        #     case 'Reading':
+        #         result = makeReading(topicstr)
+        #         result['title'] = searchFields[3][1]
+        #     case 'Free Response':
+        #         result = makeFreeResponse(topicstr)
+        #     case 'Multiple Choice':
+        #         result = makeMultChoice(topicstr)
 
-        #3. use the topic found to generate content
-        #result = makeQuestion(topicname)
-        #print(result)
-        #4. insert it into the DB and return the data
-        insert_row("UPDATE data SET data=? WHERE dataID=?", (json.dumps(result),id))
-        return jsonify(result)
+        # #3. use the topic found to generate content
+        # #result = makeQuestion(topicname)
+        # #print(result)
+        # #4. insert it into the DB and return the data
+        # insert_row("UPDATE data SET data=? WHERE dataID=?", (json.dumps(result),id))
+        generateData(int(id)+1)
+        generateData(int(id)+2)
+        
+        result = generateData(id)
+        return result
     else:        
         print("cached")
         return jsonify(json.loads(data[0][1]))

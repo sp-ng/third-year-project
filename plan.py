@@ -73,23 +73,31 @@ class TopicsTest(BaseModel):
 # listparser = JsonOutputParser(pydantic_object=Topics)
 # listparserTest = JsonOutputParser(pydantic_object=TopicsTest)
 
-listparser = PydanticOutputParser(pydantic_object=Topics)
+
 listparserTest = PydanticOutputParser(pydantic_object=TopicsTest)
 
-format_instructions = listparser.get_format_instructions()
-format_instructionsTest = listparserTest.get_format_instructions()
-listprompt = PromptTemplate(
-    template="""List: {content}.\n Instructions: Format the above list to create a JSON with nested lists according to the following provided 
-    format instructions. Ignore any extra text in the List section that is not a part of the list.\n Format instructions: {format_instructions}""",
-    input_variables=["content"],
-    partial_variables={"format_instructions": format_instructions}
-)
 
+format_instructionsTest = listparserTest.get_format_instructions()
+
+#Define JSON schema
+class Topics(BaseModel):
+    topics: List[Tuple[str, List[str]]]
+listparser = PydanticOutputParser(pydantic_object=Topics)
+#Chat message template to create topics and then change them with user feedback
 chatprompt = ChatPromptTemplate.from_messages([
     ("system", """Work with the user to create a list of topics and subtopics for studying, after a response ask if the user wants any changes. 
      It must always be a list of topics and subtopics."""),
     ("human", "Generate a list of topics with subtopics for the following subject: {subject}"),
 ])
+#This template takes the final list in text form and formats it as JSON so it can be parsed
+listprompt = PromptTemplate(
+    template="""List: {content}.\n Instructions: Format the above list to create a JSON with nested lists according to the following provided 
+    format instructions. Ignore any extra text in the List section that is not a part of the list.\n Format instructions: {format_instructions}""",
+    input_variables=["content"],
+    partial_variables={"format_instructions": listparser.get_format_instructions()}
+)
+
+format_instructions = listparser.get_format_instructions()
 
 topicprompt = PromptTemplate(
     template="Create topics and subtopics for studying the following topic: {topic}.\n Format the above list to create a JSON with nested lists according to the following provided format instructions. Format instructions: {format_instructions}",

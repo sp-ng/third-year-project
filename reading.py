@@ -20,18 +20,20 @@ from langchain.document_loaders import DirectoryLoader
 openai_api_key='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'
 openai_model_name="gpt-3.5-turbo-1106"
 chat = ChatOpenAI(temperature=0, openai_api_key=openai_api_key, model_name=openai_model_name, max_tokens=2000)
-#loader = DirectoryLoader('./Docs', glob="*.pdf")
-#documents = loader.load()
-#text_splitter = RecursiveCharacterTextSplitter(
-#    chunk_size = 1000,
-#    chunk_overlap  = 50,
-#    length_function = len,
-#    add_start_index = True,
-#)
-#texts = text_splitter.split_documents(documents)
-#embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
-#db = FAISS.from_documents(texts, embeddings)
-#retriever = db.as_retriever(search_kwargs={"k": 7})
+# loader = DirectoryLoader('./Docs', glob="*.pdf")
+# documents = loader.load()
+# #Split documents
+# text_splitter = RecursiveCharacterTextSplitter(
+#     chunk_size = 1000,
+#     chunk_overlap  = 50,
+#     length_function = len,
+#     add_start_index = True,
+# )
+# texts = text_splitter.split_documents(documents)
+# #Generate and store embeddings
+# embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
+# db = FAISS.from_documents(texts, embeddings)
+# retriever = db.as_retriever(search_kwargs={"k": 7})
 
 
 StarterPrompt = PromptTemplate(
@@ -40,9 +42,16 @@ StarterPrompt = PromptTemplate(
 )
 #Reading Material
 MaterialPrompt = PromptTemplate(
-    template="""Explain the following topic: {topic}. You may base your response on some of the following text retrieved from source materials if it is helpful: {retrieved}\n""",
+    template="""Explain the following: {topic}. You may base your response on some of the following text retrieved from source materials if it is helpful: {retrieved}\n""",
     input_variables=["topic", "retrieved"],
 )
+
+#Reading Material no retrieval
+PointsPrompt = PromptTemplate(
+    template="""Make a piece of text explaining the following: {topic}. Make sure to mention {points}\n""",
+    input_variables=["topic", "points"],
+)
+
 MaterialChain = MaterialPrompt | chat
 #Interactive Teaching
 chatprompt = ChatPromptTemplate.from_messages([
@@ -63,9 +72,13 @@ chatprompt = ChatPromptTemplate.from_messages([
 
 
 def makeReading(topic):
+    # points = chat.invoke(StarterPrompt.format(topic=topic))
+    # messages = chatprompt.format_messages(topic=topic, points=points)
+    # result = chat.invoke(messages)
     points = chat.invoke(StarterPrompt.format(topic=topic))
-    messages = chatprompt.format_messages(topic=topic, points=points)
-    result = chat.invoke(messages)
+    print(points)
+    result = chat.invoke(PointsPrompt.format(topic=topic, points=points))
+    print(result)
     return result.dict()
 
 
